@@ -15,9 +15,7 @@ jobs:
         run: npm install -g @railway/cli
 
       - name: Deploy to Railway
-        # Usamos el CLI directamente pero con variables de entorno limpias
-        run: railway up --detach
+        # Usamos los datos exactos de tu captura de pantalla
+        run: railway up --detach --project "0107c25c-a86f-4ac9-98c9-4385e6310484" --environment "production" --service "blissful-perception"
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-          # Usamos el ID que vimos en tu captura
-          RAILWAY_PROJECT_ID: "0107c25c-a86f-4ac9-98c9-4385e6310484"
