@@ -11,20 +11,20 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v4
         with:
-          python-version: '3.11'
+          context: .
+          push: false
+          tags: movil-dev:latest
 
-      - name: Install dependencies
+      - name: Run tests in Docker container
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          docker run --rm movil-dev:latest pytest
 
-      - name: Lint with flake8
+      - name: Lint with flake8 in Docker container
         run: |
-          pip install flake8
-          flake8 .
-
-      - name: Run tests
-        run: pytest
+          docker run --rm movil-dev:latest flake8 .
