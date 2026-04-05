@@ -21,6 +21,6 @@ jobs:
 
       - name: Deploy to Railway
         # Usamos el flag --project para que no haya dudas
-        run: railway up --detach --project ${{ secrets.RAILWAY_PROJECT_ID }}
+        run: railway up --detach --project ${{ secrets.RAILWAY_PROJECT_ID }} --environment production
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
