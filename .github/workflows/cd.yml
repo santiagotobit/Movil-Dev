@@ -12,17 +12,15 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4 # Actualizado a v4 que es la estable actual
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
 
       - name: Install Railway CLI
         run: npm install -g @railway/cli
 
-      # Eliminamos el paso "Authenticate Railway CLI" porque causaba el error
-      # y pasamos el token directamente al comando de despliegue.
-
       - name: Deploy to Railway
-        run: railway up --detach --service "dev-ecommerce-movil" # Opcional: --service ayuda si tienes varios
+        # Quitamos --service para que Railway use el default del proyecto
+        run: railway up --detach --yes
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
