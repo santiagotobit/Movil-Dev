@@ -11,11 +11,10 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Install Railway CLI
-        run: npm install -g @railway/cli
-
       - name: Deploy to Railway
-        # Usamos los datos exactos de tu captura de pantalla
-        run: railway up --detach --project "0107c25c-a86f-4ac9-98c9-4385e6310484" --environment "production" --service "blissful-perception"
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        uses: railwayapp/railway-action@v1
+        with:
+          railway_token: ${{ secrets.RAILWAY_TOKEN }}
+          project_id: "0107c25c-a86f-4ac9-98c9-4385e6310484"
+          environment: production
+          service: blissful-perception
