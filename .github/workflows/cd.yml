@@ -11,17 +11,49 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install Railway CLI
-        run: npm install -g @railway/cli
-
       - name: Deploy to Railway
-        run: railway up --detach
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-          RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
-          RAILWAY_ENVIRONMENT: "production"
+        # Esta es una "Action" oficial que es mucho más estable que el CLI manual
+        uses: bervina-j/railway-deploy@main
+        with:
+          railway_token: ${{ secrets.RAILWAY_TOKEN }}
+          service: "dev-ecommerce-movil" # El nombre que tienes en tu dashboard
+
+
+
+
+
+
+
+
+
+
+
+
+
+# name: Docker CD
+
+# on:
+#   push:
+#     branches: ["main"]
+
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout repo
+#         uses: actions/checkout@v3
+
+#       - name: Set up Node.js
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: '20'
+
+#       - name: Install Railway CLI
+#         run: npm install -g @railway/cli
+
+#       - name: Deploy to Railway
+#         run: railway up --detach
+#         env:
+#           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+#           RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
+#           RAILWAY_ENVIRONMENT: "production"
