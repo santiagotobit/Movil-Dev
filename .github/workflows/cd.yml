@@ -21,6 +21,6 @@ jobs:
 
       - name: Deploy to Railway
         # Quitamos --service para que Railway use el default del proyecto
-        run: railway up --detach --yes
+        run: railway up --detach 
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
