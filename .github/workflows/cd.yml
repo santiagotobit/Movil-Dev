@@ -20,6 +20,6 @@ jobs:
         run: npm install -g @railway/cli
 
       - name: Deploy to Railway
-        run: railway up --detach --project "0107c25c-a86f-4ac9-98c9-4385e6310484" --environment "production" --service "blissful-perception"
+        run: railway up --detach --project "2b6cc09c-1d29-4d30-8dc1-06eb704e4092" --environment "production" --service "blissful-perception"
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
