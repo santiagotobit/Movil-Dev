@@ -74,7 +74,7 @@ def test_google_user_debe_agregar_password_antes_local_login(monkeypatch):
     db = create_test_db()
     try:
         monkeypatch.setattr(
-            "auth.services.verify_google_id_token",
+            "backend.auth.services.verify_google_id_token",
             lambda _: {
                 "sub": "google-user-1",
                 "email": "google@example.com",
@@ -110,7 +110,7 @@ def test_google_login_links_existing_local_account(monkeypatch):
         )
 
         monkeypatch.setattr(
-            "auth.services.verify_google_id_token",
+            "backend.auth.services.verify_google_id_token",
             lambda _: {
                 "sub": "google-link-1",
                 "email": "link@example.com",
