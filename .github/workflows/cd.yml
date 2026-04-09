@@ -85,7 +85,18 @@ jobs:
             exit 1
           fi
 
+      - name: Validate Railway service
+        env:
+          RAILWAY_SERVICE: ${{ vars.RAILWAY_SERVICE }}
+        run: |
+          if [ -z "$RAILWAY_SERVICE" ]; then
+            echo "RAILWAY_SERVICE is not configured for this workflow."
+            echo "Add it as an environment variable in the GitHub environment used by this job."
+            exit 1
+          fi
+
       - name: Deploy to Railway
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: railway up
+          RAILWAY_SERVICE: ${{ vars.RAILWAY_SERVICE }}
+        run: railway up --service "$RAILWAY_SERVICE"
