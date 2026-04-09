@@ -20,6 +20,14 @@ jobs:
   # =========================
   test:
     runs-on: ubuntu-latest
+<<<<<<< HEAD
+||||||| 9ae3e71
+    environment: empathetic-patience / production
+
+=======
+    environment: empathetic-patience/production
+
+>>>>>>> 7b3449e61e84e10daa51fe6d05a94327b22c34cb
 
     steps:
       - name: Checkout repository
