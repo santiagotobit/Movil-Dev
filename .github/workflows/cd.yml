@@ -36,6 +36,7 @@ jobs:
 
       - name: Run auth tests before deploy
         env:
+          DATABASE_URL: sqlite:///./ci_auth_tests.db
           APP_JWT_SECRET: test-secret
           APP_JWT_ALGORITHM: HS256
           APP_JWT_EXPIRATION: "60"
