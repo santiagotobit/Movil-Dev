@@ -34,6 +34,7 @@ jobs:
           APP_JWT_SECRET: test-secret
           APP_JWT_ALGORITHM: HS256
           APP_JWT_EXPIRATION: "60"
+          DATABASE_URL: sqlite:///./ci_auth_tests.db
         run: python -m pytest tests/auth -q
 
   docker:
