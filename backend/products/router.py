@@ -1,4 +1,4 @@
-"""Rutas REST para gestión de productos."""
+"""Rutas REST para la gestión de productos."""
 
 from auth.dependencies import get_current_admin
 from fastapi import APIRouter, Depends, Query, status

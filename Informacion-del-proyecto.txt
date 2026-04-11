@@ -110,20 +110,20 @@ o	Promociones/Descuentos.
 Ruta de trabajo:
 
  Sprint 1 – Configuración inicial (1 semana)
-•	Configuración del repositorio y CI/CD.
-•	Definición de arquitectura (frontend, backend, base de datos).
-•	Setup de entorno de desarrollo (Docker, Railway, GitHub Actions).
-•	Documentación inicial del proyecto.
+•	Configuración del repositorio y CI/CD. ✅
+•	Definición de arquitectura (frontend, backend, base de datos). ✅
+•	Setup de entorno de desarrollo (Docker, Railway, GitHub Actions). ✅
+•	Documentación inicial del proyecto. ✅
 Sprint 2 – Gestión de usuarios
-•	Registro y login con autenticación segura (JWT/OAuth).
-•	Perfil de usuario básico.
-•	Recuperación de contraseña.
-•	Pruebas unitarias de autenticación.
+•	Registro y login con autenticación segura (JWT/OAuth). ✅
+•	Perfil de usuario básico. ✅
+•	Recuperación de contraseña.  ✅
+•	Pruebas unitarias de autenticación. ✅
 Sprint 3 – Catálogo de productos
-•	CRUD de productos en backend.
+•	CRUD de productos en backend. ✅
 •	Visualización de productos en frontend.
 •	Filtros y búsqueda avanzada. (pendiente).
-•	Integración con base de datos.
+•	Integración con base de datos. ✅
 Sprint 4 – Carrito de compras
 •	Agregar/eliminar productos.
 •	Cálculo de precios, impuestos y envío.
