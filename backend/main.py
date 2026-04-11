@@ -1,13 +1,29 @@
 """Archivo principal de la aplicación FastAPI para la autenticación de usuarios."""
 
+import sys
+from pathlib import Path
+
+# Permite importar paquetes hermanos (por ejemplo `database`) al ejecutar desde `backend/`.
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 from auth.router import router as auth_router
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from products.models import Product
+from products.router import router as products_router
 
-from database.core.database import Base, get_engine
+from database.core.database import (
+    Base,
+    ensure_products_new_columns,
+    ensure_user_role_column,
+    get_engine,
+)
 from database.core.errors import (
     AppError,
+    ConflictError,
     ForbiddenError,
     NotFoundError,
     UnauthorizedError,
@@ -59,5 +75,15 @@ def handle_not_found(_: Request, exc: NotFoundError):
     return _error_response(404, exc)
 
 
-Base.metadata.create_all(bind=get_engine())
+@app.exception_handler(ConflictError)
+def handle_conflict(_: Request, exc: ConflictError):
+    """Manejador de errores para ConflictError."""
+    return _error_response(409, exc)
+
+
+engine = get_engine()
+Base.metadata.create_all(bind=engine)
+ensure_user_role_column(engine)
+ensure_products_new_columns(engine)
 app.include_router(auth_router)
+app.include_router(products_router)

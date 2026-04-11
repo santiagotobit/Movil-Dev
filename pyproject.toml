@@ -1,0 +1,13 @@
+[tool.pylint.main]
+init-hook = "from pathlib import Path; import sys; root = Path.cwd().resolve(); backend = root / 'backend'; [sys.path.insert(0, str(path)) for path in (backend, root) if path.exists() and str(path) not in sys.path]"
+ignore = [".venv", ".pytest_cache", "frontend"]
+
+[tool.pylint.format]
+max-line-length = 100
+
+[tool.pylint.messages_control]
+disable = [
+    "missing-module-docstring",
+    "missing-function-docstring",
+    "missing-class-docstring"
+]

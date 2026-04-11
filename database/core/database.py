@@ -1,10 +1,15 @@
 """Configuración simple de base de datos para el backend."""
 
 import os
+from pathlib import Path
 from typing import Optional
 
-from sqlalchemy import Engine, create_engine
+from dotenv import load_dotenv
+from sqlalchemy import Engine, create_engine, inspect, text
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+load_dotenv(PROJECT_ROOT / ".env")
 
 
 class Base(DeclarativeBase):
@@ -26,7 +31,7 @@ def _get_database_url() -> str:
     if not raw_url:
         raise RuntimeError(
             "DATABASE_URL environment variable is not set. "
-            "Please configure it with the PostgreSQL connection string."
+            "Define it in your .env file with the PostgreSQL connection string."
         )
     # Railway provides postgresql:// URLs; psycopg3 requires postgresql+psycopg://
     return raw_url.replace("postgresql://", "postgresql+psycopg://", 1)
@@ -63,3 +68,84 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+def ensure_user_role_column(engine: Engine) -> None:
+    """Agrega la columna role si la tabla users ya existía sin ese campo."""
+    inspector = inspect(engine)
+
+    if "users" not in inspector.get_table_names():
+        return
+
+    columns = {column["name"] for column in inspector.get_columns("users")}
+    if "role" in columns:
+        return
+
+    with engine.begin() as connection:
+        connection.execute(
+            text(
+                "ALTER TABLE users "
+                "ADD COLUMN role VARCHAR(20) NOT NULL DEFAULT 'usuario'"
+            )
+        )
+
+
+def ensure_products_new_columns(engine: Engine) -> None:
+    """Agrega nuevas columnas de products si la tabla ya existía sin esos campos."""
+    inspector = inspect(engine)
+
+    if "products" not in inspector.get_table_names():
+        return
+
+    columns = {column["name"] for column in inspector.get_columns("products")}
+
+    statements: list[str] = []
+
+    if "resolucion_camara_principal" not in columns:
+        statements.append(
+            "ALTER TABLE products "
+            "ADD COLUMN resolucion_camara_principal VARCHAR(80) NOT NULL DEFAULT 'N/A'"
+        )
+
+    if (
+        "resolucion_camara_trasera" in columns
+        and "resolucion_camara_frontal" not in columns
+    ):
+        statements.append(
+            "ALTER TABLE products "
+            "RENAME COLUMN resolucion_camara_trasera TO resolucion_camara_frontal"
+        )
+        columns.add("resolucion_camara_frontal")
+
+    if "resolucion_camara_frontal" not in columns:
+        statements.append(
+            "ALTER TABLE products "
+            "ADD COLUMN resolucion_camara_frontal VARCHAR(80) NOT NULL DEFAULT 'N/A'"
+        )
+
+    if "capacidad_carga_rapida" not in columns:
+        statements.append(
+            "ALTER TABLE products "
+            "ADD COLUMN capacidad_carga_rapida VARCHAR(40) NOT NULL DEFAULT 'N/A'"
+        )
+
+    if "garantia_meses" not in columns:
+        statements.append(
+            "ALTER TABLE products "
+            "ADD COLUMN garantia_meses INTEGER NOT NULL DEFAULT 0"
+        )
+
+    if "is_active" not in columns:
+        statements.append(
+            "ALTER TABLE products " "ADD COLUMN is_active BOOLEAN NOT NULL DEFAULT TRUE"
+        )
+
+    if "imagen_url" not in columns:
+        statements.append("ALTER TABLE products ADD COLUMN imagen_url VARCHAR(500)")
+
+    if not statements:
+        return
+
+    with engine.begin() as connection:
+        for stmt in statements:
+            connection.execute(text(stmt))
