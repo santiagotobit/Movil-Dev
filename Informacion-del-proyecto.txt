@@ -122,7 +122,7 @@ Sprint 2 – Gestión de usuarios
 Sprint 3 – Catálogo de productos
 •	CRUD de productos en backend.
 •	Visualización de productos en frontend.
-•	Filtros y búsqueda avanzada.
+•	Filtros y búsqueda avanzada. (pendiente).
 •	Integración con base de datos.
 Sprint 4 – Carrito de compras
 •	Agregar/eliminar productos.
