@@ -122,7 +122,7 @@ Sprint 2 – Gestión de usuarios
 Sprint 3 – Catálogo de productos
 •	CRUD de productos en backend.
 •	Visualización de productos en frontend.
-•	Filtros y búsqueda avanzada.
+•	Filtros y búsqueda avanzada. (pendiente).
 •	Integración con base de datos.
 Sprint 4 – Carrito de compras
 •	Agregar/eliminar productos.
@@ -210,6 +210,28 @@ FLUJO DE LA ARQUITECTURA:
 Cliente (Frontend) → realiza acciones (buscar producto, comprar).
 
 API Gateway (Backend) → recibe solicitudes y aplica lógica.
+
+
+informacion de los productos:
+-id
+-marca
+-referencia
+-nombre
+-descripcion breve
+-cantidad en stock
+-precio unitario
+   atributos:
+   -tamaño de memoria ram
+   -rom
+   -colores disponibles
+   -conectividad
+   -procesador
+   -dimensiones
+   -bateria
+
+
+
+
 
 Base de Datos → almacena y devuelve información.
 
