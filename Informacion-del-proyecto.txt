@@ -211,6 +211,28 @@ Cliente (Frontend) → realiza acciones (buscar producto, comprar).
 
 API Gateway (Backend) → recibe solicitudes y aplica lógica.
 
+
+informacion de los productos:
+-id
+-marca
+-referencia
+-nombre
+-descripcion breve
+-cantidad en stock
+-precio unitario
+   atributos:
+   -tamaño de memoria ram
+   -rom
+   -colores disponibles
+   -conectividad
+   -procesador
+   -dimensiones
+   -bateria
+
+
+
+
+
 Base de Datos → almacena y devuelve información.
 
 Servicios externos → pasarela de pagos, notificaciones, envío.
