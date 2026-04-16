@@ -194,7 +194,6 @@ movil-dev-ecommerce/
 
 
 
-
 ARQUITECTURA DEL FRONT: 
 1. Frontend (Interfaz de Usuario)
 •	Rol: Presentar la aplicación al cliente final.
