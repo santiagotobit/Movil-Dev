@@ -1,123 +1,91 @@
 @import "tailwindcss"; 
 
 @theme {
-
-  /* --color-brand-purple: #7c3aed; */
   --color-brand-purple: #5baa5a;
   --color-brand-blue: #2563eb;
   --color-dark-navy: #0f172a;
   --color-light-gray: #f8fafc;
-  
-  /* Degradado principal del Hero */
   --background-image-hero-gradient: linear-gradient(to right, #6366f1, #a855f7);
 }
 
-/* 
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
-
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
   color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface-muted: #f1f5f9;
+  --text: #000000;
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --input: #f8fafc;
+  --code-bg: #f4f3ec;
+  --accent: #7c3aed;
 }
 
+.dark {
+  --bg: #0b1120;
+  --surface: #111827;
+  --surface-muted: #17181a;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --border: #834e3f;
+  --input: #111827;
+  --code-bg: #111827;
+  --accent: #8b5cf6;
+}
 
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
+* {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
 }
 
 #root {
-  width: 1126px;
+  width: 100%;
   max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
+  margin: 0;
+  text-align: left;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
+  background: var(--bg);
+  color: var(--text);
 }
 
 h1,
 h2 {
-  font-family: var(--heading);
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
   font-weight: 500;
-  color: var(--text-h);
 }
 
 h1 {
   font-size: 56px;
   letter-spacing: -1.68px;
   margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
 }
+
 h2 {
   font-size: 24px;
   line-height: 118%;
   letter-spacing: -0.24px;
   margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
 }
+
 p {
   margin: 0;
 }
 
 code,
 .counter {
-  font-family: var(--mono);
+  font-family: ui-monospace, Consolas, monospace;
   display: inline-flex;
   border-radius: 4px;
-  color: var(--text-h);
+  color: var(--text);
 }
 
 code {
@@ -126,4 +94,73 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
- */
+
+body.dark .bg-white {
+  background-color: var(--surface);
+}
+
+body.dark .bg-gray-50 {
+  background-color: #111827;
+}
+
+body.dark .bg-gray-100 {
+  background-color: #1f2937;
+}
+
+body.dark .bg-slate-900 {
+  background-color: #111827;
+}
+
+body.dark input,
+body.dark textarea,
+body.dark select,
+body.dark button {
+  background-color: #111827;
+  color: var(--text);
+  border-color: #334155;
+}
+
+body.dark input::placeholder,
+body.dark textarea::placeholder {
+  color: #94a3b8;
+}
+
+body.dark .text-slate-800,
+body.dark .text-slate-900,
+body.dark .text-black {
+  color: var(--text);
+}
+
+body.dark .text-slate-600,
+body.dark .text-gray-400,
+body.dark .text-gray-500,
+body.dark .text-slate-700 {
+  color: var(--muted);
+}
+
+body.dark .border-gray-100,
+body.dark .border-gray-200,
+body.dark .border-gray-300 {
+  border-color: var(--border);
+}
+
+body.dark .bg-\[\#0f172a\] {
+  background-color: #111827;
+}
+
+body.dark .hover\:bg-gray-50:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark .hover\:bg-purple-50:hover {
+  background-color: rgba(139, 92, 246, 0.1);
+}
+
+body.dark .bg-transparent {
+  background-color: transparent;
+}
+
+body.dark .placeholder\:text-gray-400::placeholder {
+  color: #94a3b8;
+}
+ 

@@ -8,6 +8,8 @@ import ContactBanner from './components/ContactBanner';
 import Footer from './components/Footer';
 import Catalogo from './components/Catalogo';
 import Carrito from './components/Carrito';
+import Login from './components/Login';
+import { ThemeProvider } from './context/ThemeContext';
 // import {CarritoProvider} from './context/CarritoContext';
 
 // Datos de prueba (Luego vendrán de tu backend)
@@ -21,10 +23,11 @@ const productsDemo = [
 
 function App() {
   return (
-    <div className="w-full min-h-screen bg-white">
-      <Navbar />
+    <ThemeProvider>
+      <div className="w-full min-h-screen bg-[color:var(--bg)] text-[color:var(--text)] transition-colors duration-300">
+        <Navbar />
 
-      <main className="w-full">
+        <main className="w-full bg-[color:var(--bg)]">
         <Routes>
           <Route path="/" element={
             <> 
@@ -49,7 +52,7 @@ function App() {
 
 
 {/* Prod      uctos Destacados (Puedes repetir la lógica o variar los productos) */}
-              <section className="max-w-7xl mx-auto px-6 py-16 bg-gray-50/50 rounded-[3rem] my-10">
+              <section className="max-w-7xl mx-auto px-6 py-16 bg-[color:var(--surface-muted)] rounded-[3rem] my-10">
                 <div className="flex justify-between items-center mb-10">
                   <h2 className="text-3xl font-bold text-slate-800">Productos Destacados</h2>
                   <button className="text-purple-600 font-bold border border-purple-600 px-4 py-2 rounded-lg hover:bg-purple-50 transition">Ver todos →</button>
@@ -70,13 +73,14 @@ function App() {
           
           <Route path="/gama-media" element={<Catalogo categoriaInicial="Gama Media" />} />
           <Route path="/economicos" element={<Catalogo categoriaInicial="Económicos" />} />
-
+          <Route path="/login" element={<Login />} />
           <Route path="/carrito" element={<Carrito />} />
         </Routes>
       </main>
 
       <Footer />
     </div>
+    </ThemeProvider>
   );
 }
 

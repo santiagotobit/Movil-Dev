@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import { Minus, Plus, Trash2, ArrowLeft, ShoppingBag } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCarrito } from '../context/CarritoContext';
 
 export default function Carrito() {
+  const navigate = useNavigate();
+  const [checkoutMessage, setCheckoutMessage] = useState('');
   const { 
     carrito, 
     eliminarDelCarrito, 
@@ -10,7 +13,8 @@ export default function Carrito() {
     subtotal, 
     costoEnvio, 
     iva, 
-    total 
+    total,
+    isLoggedIn
   } = useCarrito();
 
   if (carrito.length === 0) {
@@ -107,9 +111,24 @@ export default function Carrito() {
           </div>
 
           <div className="mt-8 space-y-3">
-            <button className="w-full bg-purple-600 hover:bg-purple-700 text-white py-4 rounded-xl font-bold transition shadow-lg shadow-purple-900/20">
-              Finalizar Compra
+            <button
+              type="button"
+              onClick={() => {
+                if (!isLoggedIn) {
+                  navigate('/login');
+                  return;
+                }
+                setCheckoutMessage('Estás listo para pagar. Aquí solo simulamos el flujo de checkout.');
+              }}
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white py-4 rounded-xl font-bold transition shadow-lg shadow-purple-900/20"
+            >
+              {isLoggedIn ? 'Finalizar Compra' : 'Iniciar sesión para pagar'}
             </button>
+            {checkoutMessage && (
+              <p className="text-sm text-emerald-200 bg-white/10 rounded-xl p-3">
+                {checkoutMessage}
+              </p>
+            )}
             <Link 
               to="/catalogo" 
               className="block w-full text-center text-gray-400 hover:text-white py-2 text-sm transition"

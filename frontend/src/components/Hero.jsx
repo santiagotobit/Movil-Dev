@@ -1,3 +1,6 @@
+import { Link } from 'react-router-dom';
+import { ChevronRight } from 'lucide-react'; // Un pequeño icono para darle dinamismo
+
 export default function Hero() {
   return (
     <section className="relative w-full bg-gradient-to-r from-indigo-700 to-purple-600 py-12 px-6 overflow-hidden">
@@ -11,30 +14,32 @@ export default function Hero() {
             <span className="text-white/90">Celulares al</span> <br />
             Mejor Precio
           </h1>
-          <p className="mt-6 text-xl text-green-500 max-w-xl mx-auto md:mx-0">
+          <p className="mt-6 text-xl text-indigo-100 max-w-xl mx-auto md:mx-0">
             Descubre la última tecnología en smartphones. Ofertas exclusivas y envío gratis en compras superiores a $400.000.
           </p>
+          
           <div className="mt-12 flex justify-center md:justify-start">
-            <button className="bg-white text-purple-600 px-12 py-4 rounded-full font-bold text-lg hover:bg-green-500 transition shadow-lg">
+            {/* BOTÓN CON LINK AL CATÁLOGO */}
+            <Link 
+              to="/catalogo" 
+              className="group flex items-center gap-2 bg-white text-purple-700 px-12 py-4 rounded-full font-bold text-lg hover:bg-indigo-50 transition-all shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
+            >
               Ver Catálogo
-            </button>
+              <ChevronRight className="size-5 group-hover:translate-x-1 transition-transform" />
+            </Link>
           </div>
         </div>
 
-        {/* Lado de la Imagen o Placeholder (45% de ancho) */}
+        {/* Lado de la Imagen */}
         <div className="md:w-5/12 flex justify-center relative">
-          {/* Un círculo de luz decorativo de fondo */}
-          <div className="absolute w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
-
+          {/* Círculo de luz decorativo de fondo */}
+          <div className="absolute w-80 h-80 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
 
           <img 
             src="https://ae01.alicdn.com/kf/S1ce0af8cd0384fc1b2e17f61ffb591a0x.jpg" 
-            // src="https://zeropar.com/wp-content/uploads/2024/10/Bumblebee.webp" 
-            alt="Celular" 
-            className="w-full max-w-md drop-shadow-2xl z-10 rounded-3xl"
+            alt="Último modelo de celular" 
+            className="w-full max-w-md drop-shadow-2xl z-10 rounded-3xl transform hover:rotate-2 transition-transform duration-500"
           />
-          
-
         </div>
       </div>
     </section>

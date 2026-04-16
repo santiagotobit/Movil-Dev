@@ -4,7 +4,7 @@ const CarritoContext = createContext();
 
 export const CarritoProvider = ({ children }) => {
   const [carrito, setCarrito] = useState([]);
-  const [isLoggedIn, setIsLoggedIn] = useState(true); // Cambia a true para probar el carrito lleno
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Estado inicial: usuario no autenticado
 
   const agregarAlCarrito = (producto) => {
     setCarrito(prev => {
