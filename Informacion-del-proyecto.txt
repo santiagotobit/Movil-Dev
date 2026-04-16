@@ -129,6 +129,37 @@ Sprint 4 – Carrito de compras
 •	Cálculo de precios, impuestos y envío.
 •	Persistencia del carrito.
 •	Pruebas de integración.
+tareas:
+backend:
+implementar endpoint POST /cart/add para agregar productos con validacion de stock.
+implementar endpoint DELETE /cart/remove/{id}
+manejo de errores: producto inexistente, cantidades invalidas.
+frontend:
+botones de agregar al carrito y eliminar en la interfaz.
+actualizacion dinamica del carrito(AJAX, fetch API)
+base de datos:
+crear tabla cart_items id user_id product_id quantity price
+
+logica de negocio aplicada el carrito:
+Subtotal = suma de precios × cantidad.
+Impuestos = porcentaje configurable (ejemplo: IVA 19%).
+Envío = tarifa fija o dinámica según peso/ubicación.
+
+GET /cart/total (trtaer datos de la logica de negocio
+
+parametrizar impuestos y tarifas de  envio en archivo .env 
+
+persistencia del carrito
+
+usuarios autenticados sql
+usuarios no autenticados session /cookies
+crear migracion con flask - migrate (para mantener el esquema actualizado)
+
+validar que el carrito persista desdpues de cerrar sesion y volver a iniciar (usuarios autenticados)
+
+
+
+
 Sprint 5 – Checkout y pagos
 •	Integración con pasarela de pagos (Stripe/PayPal).
 •	Validación de transacciones.
