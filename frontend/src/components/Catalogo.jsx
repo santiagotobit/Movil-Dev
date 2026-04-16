@@ -1,48 +1,66 @@
-import { useState, useEffect } from 'react';
+// import { useEffect } from 'react';
 import { Filter, ChevronDown } from 'lucide-react';
+import { useParams, useNavigate } from 'react-router-dom'; // Importamos hooks de ruta
 import ProductCard from './ProductCard';
 
-export default function Catalogo({ categoriaInicial = 'Todas' }) {
-    const [categoriaSel, setCategoriaSel] = useState(categoriaInicial);
-  // Estado para filtros (puedes expandir esto luego)
-    // const [categoriaSel, setCategoriaSel] = useState('Todas');
+export default function Catalogo() {
+  // 1. Extraemos la categoría de la URL (ej: /catalogo/premium)
+  const { categoriaUrl } = useParams(); 
+  const navigate = useNavigate();
 
-  const categorias = ['Todas', 'Premium', 'Gama Media', 'Económicos'];
+  // Mapeamos el nombre de la URL al nombre visual
+  const categorias = ['Todas', 'Premium', 'Gama Media', 'Economicos'];
   const marcas = ['Apple', 'Google', 'Motorola', 'Nothing', 'OPPO', 'OnePlus', 'Realme', 'Samsung', 'Xiaomi'];
 
-    useEffect(() => {
-        setCategoriaSel(categoriaInicial);
-    }, [categoriaInicial]);
-    
+  // Determinamos la categoría seleccionada basada en la URL o 'Todas' por defecto
+const categoriaSel = categoriaUrl 
+  ? categorias.find(c => c.toLowerCase().replace(/\s+/g, '-') === categoriaUrl?.toLowerCase()) 
+  : 'Todas';
+
+  // 2. Título Dinámico
+  const tituloPagina = categoriaSel === 'Todas' 
+    ? 'Catálogo de Celulares' 
+    : `Celulares ${categoriaSel}`;
+
+  // 3. Función para navegar al filtrar
+  const manejarFiltro = (cat) => {
+    if (cat === 'Todas') {
+      navigate('/catalogo');
+    } else {
+      const slug = cat.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-');
+      navigate(`/catalogo/${slug}`);
+    }
+  };
 
   return (
     <div className="max-w-[1440px] mx-auto px-6 py-10">
-      {/* Encabezado del Catálogo */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-800">Catálogo de Celulares</h1>
+      {/* Encabezado Dinámico */}
+      <div className="mb-8 text-center lg:text-left">
+        <h1 className="text-2xl md:text-3xl font-bold text-slate-800 transition-all">
+          {tituloPagina}
+        </h1>
         <p className="text-gray-500">12 productos disponibles</p>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-8">
         
-        {/* SIDEBAR DE FILTROS (25% aprox) */}
-        <aside className="w-full lg:w-64 space-y-8 bg-white p-6 rounded-2xl border border-gray-100 h-fit sticky top-24">
+        {/* SIDEBAR DE FILTROS */}
+        <aside className="w-full lg:w-64 space-y-6 bg-white p-6 rounded-2xl border border-gray-100 lg:sticky lg:top-24 h-fit">
           <div className="flex items-center gap-2 border-b pb-4">
             <Filter className="size-5 text-purple-600" />
             <h2 className="font-bold text-lg">Filtros</h2>
           </div>
 
-          {/* Filtro por Categoría */}
           <div>
             <h3 className="font-bold text-slate-700 mb-4">Categoría</h3>
             <div className="flex flex-col gap-2">
               {categorias.map(cat => (
                 <button
                   key={cat}
-                  onClick={() => setCategoriaSel(cat)}
+                  onClick={() => manejarFiltro(cat)} // Ahora navega en lugar de solo cambiar estado
                   className={`text-left px-4 py-2 rounded-xl text-sm font-medium transition ${
                     categoriaSel === cat 
-                    ? 'bg-slate-900 text-white' 
+                    ? 'bg-slate-900 text-white shadow-lg shadow-slate-200' 
                     : 'bg-gray-50 text-slate-600 hover:bg-gray-100'
                   }`}
                 >
@@ -52,7 +70,7 @@ export default function Catalogo({ categoriaInicial = 'Todas' }) {
             </div>
           </div>
 
-          {/* Filtro por Marca */}
+          {/* Filtro por Marca (Se mantiene igual) */}
           <div>
             <h3 className="font-bold text-slate-700 mb-4">Marca</h3>
             <div className="space-y-3">
@@ -64,22 +82,15 @@ export default function Catalogo({ categoriaInicial = 'Todas' }) {
               ))}
             </div>
           </div>
-
-          {/* Filtro de Precio (Slider simplificado) */}
-          <div>
-            <h3 className="font-bold text-slate-700 mb-4">Precio: $0 - $1500</h3>
-            <input type="range" min="0" max="1500" className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-purple-600" />
-          </div>
         </aside>
 
-        {/* CONTENIDO PRINCIPAL (Cuadrícula de productos) */}
-        <main className="flex-1">
-          {/* Barra superior de ordenamiento */}
+        {/* CONTENIDO PRINCIPAL */}
+        <main className="w-full lg:flex-1-1">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
             <div className="relative w-full sm:max-w-xs">
               <input 
                 type="text" 
-                placeholder="Buscar celulares..." 
+                placeholder={`Buscar en ${categoriaSel.toLowerCase()}...`} 
                 className="w-full bg-white border border-gray-200 rounded-xl py-2 px-4 outline-none focus:ring-2 focus:ring-purple-500"
               />
             </div>
@@ -90,10 +101,8 @@ export default function Catalogo({ categoriaInicial = 'Todas' }) {
 
           {/* Grid de Productos */}
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {/* Aquí usarías el map de tus productos reales */}
-            {/* <ProductCard product={...} /> */}
             <div className="text-center py-20 col-span-full text-gray-400 border-2 border-dashed border-gray-100 rounded-3xl">
-              Aquí se mostrarán los productos filtrados según tu diseño.
+              Mostrando resultados para: <span className="font-bold text-slate-800">{categoriaSel}</span>
             </div>
           </div>
         </main>

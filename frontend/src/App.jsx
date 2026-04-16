@@ -7,6 +7,8 @@ import Categories from './components/categories';
 import ContactBanner from './components/ContactBanner';
 import Footer from './components/Footer';
 import Catalogo from './components/Catalogo';
+import Carrito from './components/Carrito';
+// import {CarritoProvider} from './context/CarritoContext';
 
 // Datos de prueba (Luego vendrán de tu backend)
 const productsDemo = [
@@ -63,12 +65,16 @@ function App() {
           } />
           {/* RUTAS DEL CATÁLOGO: Todas llevan al mismo componente */}
           <Route path="/catalogo" element={<Catalogo />} />
+          <Route path="/catalogo/:categoriaUrl" element={<Catalogo />} />
           <Route path="/premium" element={<Catalogo categoriaInicial="Premium" />} />
+          
           <Route path="/gama-media" element={<Catalogo categoriaInicial="Gama Media" />} />
           <Route path="/economicos" element={<Catalogo categoriaInicial="Económicos" />} />
+
+          <Route path="/carrito" element={<Carrito />} />
         </Routes>
       </main>
-      
+
       <Footer />
     </div>
   );

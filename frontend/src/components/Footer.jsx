@@ -29,10 +29,11 @@ export default function Footer() {
           <div>
             <h4 className="text-lg font-bold mb-6">Enlaces Rápidos</h4>
             <ul className="space-y-4 text-gray-400 text-sm">
-              <li className="hover:text-white cursor-pointer">Catálogo</li>
-              <li className="hover:text-white cursor-pointer">Premium</li>
-              <li className="hover:text-white cursor-pointer">Gama Media</li>
-              <li className="hover:text-white cursor-pointer">Económicos</li>
+              {/* ajustar para que navegue a cada categoria */}
+              <li className="hover:text-white cursor-pointer" onClick={() => window.location.href = '/catalogo'}>Catálogo</li>
+              <li className="hover:text-white cursor-pointer" onClick={() => window.location.href = '/catalogo/premium'}>Premium</li>
+              <li className="hover:text-white cursor-pointer" onClick={() => window.location.href = '/catalogo/gama-media'}>Gama Media</li>
+              <li className="hover:text-white cursor-pointer" onClick={() => window.location.href = '/catalogo/economicos'}>Economicos</li>
             </ul>
           </div>
 

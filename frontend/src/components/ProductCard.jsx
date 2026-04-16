@@ -1,6 +1,9 @@
 import { ShoppingCart, Star } from 'lucide-react';
+import { useCarrito } from '../context/CarritoContext';
 
 export default function ProductCard({ product }) {
+  const { agregarAlCarrito } = useCarrito();
+
   return (
     <div className="group bg-white rounded-2xl border border-gray-100 p-4 hover:shadow-xl transition-all duration-300">
       {/* Imagen y Badges */}
@@ -42,7 +45,9 @@ export default function ProductCard({ product }) {
       </div>
 
       {/* Botón Añadir */}
-      <button className="w-full mt-4 bg-slate-900 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-purple-600 transition-colors">
+      <button
+        onClick={() => agregarAlCarrito(product)}
+        className="w-full mt-4 bg-slate-900 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-purple-600 transition-colors">
         <ShoppingCart className="size-4" />
         Añadir al carrito
       </button>
