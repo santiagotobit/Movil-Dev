@@ -1,25 +1,30 @@
+import { Link } from 'react-router-dom';
+
 export default function Categories() {
   const categories = [
     {
       id: 'premium',
       title: 'Premium',
-      image: 'https://images.unsplash.com/photo-1616348436168-de43ad0db179?auto=format&fit=crop&q=80&w=800', // iPhone / High-end
+      image: 'https://images.unsplash.com/photo-1616348436168-de43ad0db179?auto=format&fit=crop&q=80&w=800',
       description: 'Lo último en tecnología y potencia',
-      color: 'from-purple-900/80'
+      color: 'from-purple-900/80',
+      path: '/catalogo/premium' // Ruta a la que debe ir
     },
     {
       id: 'gama-media',
       title: 'Gama Media',
-      image: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&q=80&w=800', // Android moderno
+      image: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&q=80&w=800',
       description: 'El equilibrio perfecto entre precio y calidad',
-      color: 'from-blue-900/80'
+      color: 'from-blue-900/80',
+      path: '/catalogo/gama-media' // Ruta a la que debe ir
     },
     {
       id: 'economicos',
       title: 'Económicos',
-      image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&q=80&w=800', // Celular sencillo
+      image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&q=80&w=800',
       description: 'Funcionalidad al alcance de todos',
-      color: 'from-slate-900/80'
+      color: 'from-slate-900/80',
+      path: '/catalogo/economicos' // Ruta a la que debe ir
     }
   ];
 
@@ -33,9 +38,11 @@ export default function Categories() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {categories.map((cat) => (
-            <div 
+            /* Cambiamos el div por un Link */
+            <Link 
+              to={cat.path}
               key={cat.id}
-              className="group relative h-80 rounded-3xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500"
+              className="group relative h-80 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 block"
             >
               {/* Imagen de fondo */}
               <img 
@@ -44,7 +51,7 @@ export default function Categories() {
                 className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
               />
               
-              {/* Overlay degradado para que el texto se lea bien */}
+              {/* Overlay degradado */}
               <div className={`absolute inset-0 bg-gradient-to-t ${cat.color} to-transparent opacity-90`}></div>
               
               {/* Contenido de la tarjeta */}
@@ -53,11 +60,11 @@ export default function Categories() {
                 <p className="text-white/80 text-sm mb-4 transform translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
                   {cat.description}
                 </p>
-                <button className="w-fit bg-white text-slate-900 px-6 py-2 rounded-full font-bold text-sm hover:bg-purple-600 hover:text-white transition-colors">
+                <div className="w-fit bg-white text-slate-900 px-6 py-2 rounded-full font-bold text-sm group-hover:bg-purple-600 group-hover:text-white transition-colors">
                   Explorar
-                </button>
+                </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
