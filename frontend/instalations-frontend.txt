@@ -18,3 +18,10 @@ npm install react-icons
 
 Intalamos react-router-dom
 npm install react-router-dom
+
+requerimientos que se deben instalar para el proyecto frontend:
+- React (con Vite)
+- Tailwind CSS
+- Lucide React (para iconos)
+- React Icons (alternativa a Lucide)
+- React Router DOM (para navegación)
