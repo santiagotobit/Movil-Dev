@@ -1,6 +1,0 @@
-npm create vite@latest . -- --template react
-npm install -D tailwindcss postcss autoprefixer
-npx tailwindcss init -p
-npm install lucide-react@latest
-npm install react-icons
-npm install react-router-dom 
