@@ -1,11 +1,12 @@
 import { LogOut, Menu, Moon, Search, ShoppingCart, Sun, User, X } from 'lucide-react';
 import { useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useCarrito } from '../context/CarritoContext';
 import { useTheme } from '../context/ThemeContext';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
   const { carrito, isLoggedIn, logout, currentUser } = useCarrito(); 
   const { theme, toggleTheme } = useTheme();
   const isAdmin = currentUser?.role === 'administrador';
@@ -125,8 +126,9 @@ export default function Navbar() {
           </button>
 
           {/* Carrito con redirección inteligente */}
-          <Link 
-            to="/carrito" 
+          <button
+            type="button"
+            onClick={() => isLoggedIn ? navigate('/carrito') : navigate('/login')}
             className="relative text-[color:var(--text)] hover:text-purple-600 transition"
           >
             <ShoppingCart className="size-6" />
@@ -135,7 +137,7 @@ export default function Navbar() {
                 {totalItems}
               </span>
             )}
-          </Link>
+          </button>
 
           {/* Botón de Usuario */}
           <Link

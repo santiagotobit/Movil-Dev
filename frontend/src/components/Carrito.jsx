@@ -1,5 +1,5 @@
 import { ArrowLeft, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCarrito } from '../context/CarritoContext';
 
@@ -19,8 +19,19 @@ export default function Carrito() {
     iva, 
     total,
     cartTaxPercent,
-    isLoggedIn
+    isLoggedIn,
+    isAuthLoading,
   } = useCarrito();
+
+  useEffect(() => {
+    if (!isAuthLoading && !isLoggedIn) {
+      navigate('/login', { replace: true });
+    }
+  }, [isAuthLoading, isLoggedIn, navigate]);
+
+  if (isAuthLoading || (!isLoggedIn)) {
+    return null;
+  }
 
   if (isCartLoading) {
     return (

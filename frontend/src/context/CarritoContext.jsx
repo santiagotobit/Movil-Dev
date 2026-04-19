@@ -10,6 +10,7 @@ import {
 
 const CarritoContext = createContext();
 const CART_SETTINGS_KEY = 'movil_dev_cart_settings_v1';
+const LOCAL_CART_KEY = 'movil_dev_local_cart_v1';
 
 const DEFAULT_CART_SETTINGS = {
   taxRate: 21,
@@ -65,6 +66,19 @@ export const CarritoProvider = ({ children }) => {
   const [carrito, setCarrito] = useState([]);
   const [isCartLoading, setIsCartLoading] = useState(false);
   const [cartError, setCartError] = useState('');
+
+  const [localCart, setLocalCart] = useState(() => {
+    try {
+      const raw = localStorage.getItem(LOCAL_CART_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem(LOCAL_CART_KEY, JSON.stringify(localCart));
+  }, [localCart]);
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
@@ -167,6 +181,31 @@ export const CarritoProvider = ({ children }) => {
   };
 
   const agregarAlCarrito = async (producto) => {
+    if (!isLoggedIn) {
+      setLocalCart((prev) => {
+        const existing = prev.find((item) => item.productId === producto.id);
+        if (existing) {
+          return prev.map((item) =>
+            item.productId === producto.id
+              ? { ...item, cantidad: item.cantidad + 1 }
+              : item,
+          );
+        }
+        return [
+          ...prev,
+          {
+            id: `local_${producto.id}`,
+            productId: producto.id,
+            referencia: producto.referencia || '',
+            nombre: producto.nombre,
+            precio: Number(producto.precio || 0),
+            cantidad: 1,
+            image: producto.image || 'https://placehold.co/400x400?text=Producto',
+          },
+        ];
+      });
+      return;
+    }
     try {
       setCartError('');
       await addToCart(producto.id, 1);
@@ -223,15 +262,17 @@ export const CarritoProvider = ({ children }) => {
     setCartSettings((prev) => normalizeCartSettings({ ...prev, ...changes }));
   };
 
+  const effectiveCarrito = isLoggedIn ? carrito : localCart;
+
   const itemCount = useMemo(
-    () => carrito.reduce((acc, item) => acc + Number(item.cantidad || 0), 0),
-    [carrito],
+    () => effectiveCarrito.reduce((acc, item) => acc + Number(item.cantidad || 0), 0),
+    [effectiveCarrito],
   );
 
   return (
     <CarritoContext.Provider
       value={{
-        carrito,
+        carrito: effectiveCarrito,
         isCartLoading,
         cartError,
         refreshCart,
