@@ -70,7 +70,8 @@ export default function Login() {
     setErrorMsg('');
     setForgotSuccessMsg('');
     setResetSuccessMsg('');
-  }, [location.search]);
+    navigate('/login', { replace: true });
+  }, [location.search, navigate]);
 
   useEffect(() => {
     const initializeGoogleButton = () => {
@@ -197,6 +198,12 @@ export default function Login() {
     setIsSubmitting(true);
     setErrorMsg('');
     setResetSuccessMsg('');
+
+    if (!resetToken.trim()) {
+      setIsSubmitting(false);
+      setErrorMsg('El enlace de restablecimiento no es válido o ya expiró. Solicita uno nuevo.');
+      return;
+    }
 
     if (resetNewPassword !== resetConfirmPassword) {
       setIsSubmitting(false);
@@ -539,21 +546,9 @@ export default function Login() {
                 <div>
                   <h2 className="text-2xl font-bold text-[color:var(--text)]">Restablecer contraseña</h2>
                   <p className="mt-2 text-sm text-[color:var(--muted)]">
-                    Usa el token de recuperación y define una nueva contraseña.
+                    Define una nueva contraseña para tu cuenta.
                   </p>
                 </div>
-
-                <label className="block text-sm font-medium text-[color:var(--text)]">
-                  Token de recuperación
-                  <input
-                    type="text"
-                    value={resetToken}
-                    onChange={(e) => setResetToken(e.target.value)}
-                    placeholder="Pega aquí tu token"
-                    className="mt-2 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-muted)] py-3 px-4 text-[color:var(--text)] outline-none transition focus:border-purple-600"
-                    required
-                  />
-                </label>
 
                 <label className="block text-sm font-medium text-[color:var(--text)]">
                   Nueva contraseña
