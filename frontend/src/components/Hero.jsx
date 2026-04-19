@@ -52,15 +52,15 @@ const promotionalVideoSlideTwo = {
 };
 
 const BRAND_AURA_MAP = {
-  apple: '45, 212, 191',
-  samsung: '56, 189, 248',
+  apple: '100, 212, 191',
+  samsung: '100, 189, 248',
   google: '99, 102, 241',
   xiaomi: '251, 146, 60',
-  motorola: '129, 140, 248',
+  motorola: '300, 140, 248',
   huawei: '244, 114, 182',
 };
 
-const DEFAULT_AURA = '56, 189, 248';
+const DEFAULT_AURA = '100, 189, 248';
 
 function getAuraColorByBrand(brand) {
   if (!brand) {
@@ -85,7 +85,7 @@ export default function Hero({ products = [] }) {
         src: product.image,
         alt: `${product.nombre || 'Celular'} en promoción`,
         badge: index === 0 ? 'Top Ventas' : 'Promoción',
-        title: `${product.marca || ''} ${product.nombre || 'Celular'}`.trim(),
+        title: ` ${product.nombre || 'Celular'}`.trim(),
         description: `Llévalo hoy desde $${product.precio}. Unidades limitadas y envío rápido.`,
         ctaPath: '/catalogo',
         ctaText: 'Ver Detalles',
