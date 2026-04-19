@@ -20,5 +20,6 @@ export function toProductCardModel(product) {
     rating: 4.7,
     reviews: 0,
     image: product.imagen_url || FALLBACK_IMAGE,
+    is_featured: Boolean(product.is_featured),
   };
 }

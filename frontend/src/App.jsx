@@ -61,7 +61,7 @@ function App() {
           <Route path="/" element={
             <> 
             
-              <Hero />
+              <Hero products={products} />
               <Features />
               <Categories />
 

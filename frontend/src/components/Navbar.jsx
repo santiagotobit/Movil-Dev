@@ -25,8 +25,12 @@ export default function Navbar() {
       <div className="max-w-[1440px] mx-auto px-6 h-20 flex items-center justify-between gap-8 bg-[color:var(--surface)] border-b border-[color:var(--border)]">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
-          <div className="bg-gradient-to-br from-blue-600 to-purple-600 p-2 rounded-lg text-white font-bold text-xl">
-            MD
+          <div >
+            <img
+              src="https://res.cloudinary.com/dms34zmay/image/upload/v1776569393/ralrhgihg9xbf0k3okg3.png"
+              alt="logo"
+              className="h-20 w-20 object-contain"
+            />
           </div>
           <span className="font-bold text-2xl text-[color:var(--text)]">Móvil Dev</span>
         </Link>

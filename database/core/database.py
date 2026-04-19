@@ -140,6 +140,12 @@ def ensure_products_new_columns(engine: Engine) -> None:
             "ALTER TABLE products " "ADD COLUMN is_active BOOLEAN NOT NULL DEFAULT TRUE"
         )
 
+    if "is_featured" not in columns:
+        statements.append(
+            "ALTER TABLE products "
+            "ADD COLUMN is_featured BOOLEAN NOT NULL DEFAULT FALSE"
+        )
+
     if "imagen_url" not in columns:
         statements.append("ALTER TABLE products ADD COLUMN imagen_url VARCHAR(500)")
 

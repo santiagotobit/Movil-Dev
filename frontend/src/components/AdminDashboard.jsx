@@ -35,6 +35,7 @@ const BASE_CREATE_FORM = {
   imagen_url: '',
   colores_disponibles: '',
   is_active: true,
+  is_featured: false,
 };
 
 const BASE_EDIT_FORM = {
@@ -58,6 +59,7 @@ const BASE_EDIT_FORM = {
   imagen_url: '',
   colores_disponibles: '',
   is_active: true,
+  is_featured: false,
 };
 
 function toPayload(form) {
@@ -85,6 +87,7 @@ function toPayload(form) {
     garantia_meses: Number(form.garantia_meses || 0),
     imagen_url: form.imagen_url.trim() || null,
     is_active: form.is_active,
+    is_featured: form.is_featured,
   };
 }
 
@@ -112,6 +115,7 @@ function productToEditForm(product) {
       ? product.colores_disponibles.join(', ')
       : '',
     is_active: Boolean(product.is_active),
+    is_featured: Boolean(product.is_featured),
   };
 }
 
@@ -280,6 +284,17 @@ function ProductFields({ form, onChange }) {
           className="size-4"
         />
         Producto activo
+      </label>
+
+      <label className="md:col-span-2 lg:col-span-3 inline-flex items-center gap-3 rounded-xl border border-indigo-200 bg-indigo-50/40 px-3 py-2 text-sm text-indigo-800">
+        <input
+          type="checkbox"
+          name="is_featured"
+          checked={form.is_featured}
+          onChange={onChange}
+          className="size-4"
+        />
+        Mostrar en Hero como producto destacado
       </label>
     </div>
   );
@@ -848,6 +863,7 @@ export default function AdminDashboard() {
                 <th className="text-left px-4 py-3">Stock</th>
                 <th className="text-left px-4 py-3">Precio</th>
                 <th className="text-left px-4 py-3">Estado</th>
+                <th className="text-left px-4 py-3">Hero</th>
                 <th className="text-left px-4 py-3">Acciones</th>
               </tr>
             </thead>
@@ -863,6 +879,11 @@ export default function AdminDashboard() {
                   <td className="px-4 py-3">
                     <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${product.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-700'}`}>
                       {product.is_active ? 'Activo' : 'Inactivo'}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${product.is_featured ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-200 text-slate-700'}`}>
+                      {product.is_featured ? 'Destacado' : 'Normal'}
                     </span>
                   </td>
                   <td className="px-4 py-3">

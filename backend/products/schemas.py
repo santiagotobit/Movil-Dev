@@ -31,6 +31,7 @@ class ProductBase(BaseModel):
     garantia_meses: int = Field(..., ge=0)
     imagen_url: str | None = Field(default=None, max_length=500)
     is_active: bool = True
+    is_featured: bool = False
 
 
 class ProductCreate(ProductBase):
@@ -68,6 +69,7 @@ class ProductUpdate(BaseModel):
     garantia_meses: int | None = Field(default=None, ge=0)
     imagen_url: str | None = Field(default=None, max_length=500)
     is_active: bool | None = None
+    is_featured: bool | None = None
 
 
 class ProductResponse(ProductBase):
