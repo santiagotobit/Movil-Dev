@@ -180,14 +180,14 @@ export const CarritoProvider = ({ children }) => {
     }
   };
 
-  const agregarAlCarrito = async (producto) => {
+  const agregarAlCarrito = async (producto, quantity = 1) => {
     if (!isLoggedIn) {
       setLocalCart((prev) => {
         const existing = prev.find((item) => item.productId === producto.id);
         if (existing) {
           return prev.map((item) =>
             item.productId === producto.id
-              ? { ...item, cantidad: item.cantidad + 1 }
+              ? { ...item, cantidad: item.cantidad + quantity }
               : item,
           );
         }
@@ -199,7 +199,7 @@ export const CarritoProvider = ({ children }) => {
             referencia: producto.referencia || '',
             nombre: producto.nombre,
             precio: Number(producto.precio || 0),
-            cantidad: 1,
+            cantidad: quantity,
             image: producto.image || 'https://placehold.co/400x400?text=Producto',
           },
         ];
@@ -208,7 +208,7 @@ export const CarritoProvider = ({ children }) => {
     }
     try {
       setCartError('');
-      await addToCart(producto.id, 1);
+      await addToCart(producto.id, quantity);
       await refreshCart();
     } catch (error) {
       setCartError(getApiErrorMessage(error));
