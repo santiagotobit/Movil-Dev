@@ -63,9 +63,7 @@ export default function ProductDetailModal({ product, isOpen, onClose }) {
       ...displayProduct,
       color_selected: selectedColor,
     };
-    for (let i = 0; i < quantity; i++) {
-      agregarAlCarrito(productToAdd);
-    }
+    agregarAlCarrito(productToAdd, quantity);
     setAddedToCart(true);
     setTimeout(() => setAddedToCart(false), 2000);
   };
@@ -136,9 +134,7 @@ export default function ProductDetailModal({ product, isOpen, onClose }) {
               {/* Precio y stock */}
               <div className="flex items-baseline gap-3 flex-wrap">
                 <span className="text-3xl font-bold text-blue-600">
-                  ${typeof normalizedProduct.precio === 'string' 
-                    ? normalizedProduct.precio 
-                    : normalizedProduct.precio?.toLocaleString()}
+                  ${normalizedProduct.formattedPrice}
                 </span>
                 {normalizedProduct.cantidad_stock > 0 ? (
                   <span className="text-sm text-green-600 font-medium">

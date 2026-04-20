@@ -7,6 +7,11 @@ import ProductDetailModal from './ProductDetailModal';
 export default function ProductCard({ product }) {
   const { agregarAlCarrito } = useCarrito();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const priceLabel =
+    product.formattedPrice ??
+    (product.precio != null && product.precio !== ''
+      ? String(product.precio)
+      : '—');
 
   return (
     <>
@@ -36,14 +41,14 @@ export default function ProductCard({ product }) {
           {/* Rating */}
           <div className="flex items-center gap-1">
             <Star className="size-3 fill-amber-400 text-amber-400" />
-            <span className="text-xs font-bold text-slate-700">{product.rating || 4.5}</span>
+            <span className="text-xs font-bold text-slate-700">{product.rating ?? 4.5}</span>
             <span className="text-xs text-gray-400">({product.reviews || 0})</span>
           </div>
 
           {/* Precio */}
           <div className="pt-2 flex items-baseline gap-2">
             <span className="text-2xl font-bold text-blue-600">
-              ${(product.precio_unitario || product.precio).toLocaleString()}
+              ${priceLabel}
             </span>
             {product.oldPrice && (
               <span className="text-sm text-gray-400 line-through">${product.oldPrice}</span>

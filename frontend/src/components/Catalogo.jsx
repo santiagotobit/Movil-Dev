@@ -59,7 +59,7 @@ export default function Catalogo() {
           : { categoria: categoryToApiValue(categoriaSel) };
 
         const apiProducts = await getProducts(params);
-        const mappedProducts = apiProducts.map(toProductCardModel);
+        const mappedProducts = apiProducts.map(toProductCardModel).filter(Boolean);
 
         if (isMounted) {
           setProducts(mappedProducts);
@@ -103,7 +103,7 @@ export default function Catalogo() {
 
     const matchesBrand =
       selectedBrands.length === 0 ||
-      selectedBrands.includes(product.marca);
+      selectedBrands.some(brand => brand.toLowerCase() === product.marca.toLowerCase());
 
     return matchesSearch && matchesBrand;
   });

@@ -9,18 +9,16 @@ function formatPrice(value) {
 }
 
 export function toProductCardModel(product) {
+  const mapped = mapProductFromApi(product);
+  if (!mapped) return null;
+
   return {
-    id: product.id,
-    referencia: product.referencia,
-    marca: product.marca,
-    nombre: product.nombre,
-    precio: formatPrice(product.precio_unitario),
+    ...mapped,
+    image: mapped.imagen_url || mapped.image || FALLBACK_IMAGE,
     oldPrice: null,
     discount: null,
     rating: 4.7,
     reviews: 0,
-    image: product.imagen_url || FALLBACK_IMAGE,
-    is_featured: Boolean(product.is_featured),
   };
 }
 
@@ -50,6 +48,8 @@ export function mapProductFromApi(apiProduct) {
     }
   }
 
+  const precio = Number(apiProduct.precio_unitario || 0);
+
   return {
     // Datos básicos
     id: apiProduct.id,
@@ -59,8 +59,9 @@ export function mapProductFromApi(apiProduct) {
     categoria: apiProduct.categoria,
     descripcion_breve: apiProduct.descripcion_breve,
     cantidad_stock: apiProduct.cantidad_stock,
-    precio: apiProduct.precio_unitario,
-    precio_unitario: apiProduct.precio_unitario,
+    precio: precio,
+    precio_unitario: precio,
+    formattedPrice: formatPrice(precio),
     
     // Especificaciones
     tamano_memoria_ram: apiProduct.tamano_memoria_ram,

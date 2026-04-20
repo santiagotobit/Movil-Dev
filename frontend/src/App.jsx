@@ -33,7 +33,7 @@ function App() {
     const loadProducts = async () => {
       try {
         const apiProducts = await getProducts();
-        const mappedProducts = apiProducts.map(toProductCardModel);
+        const mappedProducts = apiProducts.map(toProductCardModel).filter(Boolean);
 
         if (isMounted && mappedProducts.length > 0) {
           setProducts(mappedProducts);
