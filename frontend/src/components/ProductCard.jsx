@@ -66,18 +66,18 @@ export default function ProductCard({ product }) {
         <div className="mt-4 flex gap-2">
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex-1 bg-red-500 text-white py-1 rounded-4xl font-bold flex items-center justify-center gap-2 hover:bg-red-700 transition-colors"
+            className="flex items-center gap-2 bg-red-500 text-white text-sm font-semibold px-4 py-2 rounded-full hover:bg-red-600 active:scale-95 transition-all duration-200 shadow-sm"
           >
-            <Eye className="size-5" />
+            <Eye className="size-4" />
             Detalles
           </button>
           <button
             onClick={() => agregarAlCarrito(product)}
             disabled={isOutOfStock}
-            className={`flex-1 py-3 rounded-4xl font-bold flex items-center justify-center gap-2 transition-colors ${isOutOfStock ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-slate-900 text-white hover:bg-blue-600'}`}
+            className={`flex-1 flex items-center justify-center gap-2 text-sm font-semibold px-4 py-2 rounded-full active:scale-95 transition-all duration-200 shadow-sm ${isOutOfStock ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-slate-900 text-white hover:bg-blue-600'}`}
           >
-            <ShoppingCart className="size-4 flex items-center justify-center" />
-            {isOutOfStock ? 'Sin stock' : 'Añadir al carrito'}
+            <ShoppingCart className="size-4" />
+            {isOutOfStock ? 'Sin stock' : 'Añadir'}
           </button>
         </div>
       </div>
