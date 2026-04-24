@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ChevronDown, Filter } from 'lucide-react';
-import { useNavigate, useParams } from 'react-router-dom'; // Importamos hooks de ruta
+import { useLocation, useNavigate, useParams } from 'react-router-dom'; // Importamos hooks de ruta
 import { getProducts } from '../api/services/productsService';
 import { toProductCardModel } from '../api/mappers/productMapper';
 import ProductCard from './ProductCard';
@@ -28,6 +28,7 @@ export default function Catalogo() {
   // 1. Extraemos la categoría de la URL (ej: /catalogo/premium)
   const { categoriaUrl } = useParams(); 
   const navigate = useNavigate();
+  const location = useLocation();
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
@@ -45,12 +46,17 @@ export default function Catalogo() {
     : `Celulares ${categoriaSel}`;
 
   useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const search = params.get('search') || '';
+    setSearchText(search);
+  }, [location.search]);
+
+  useEffect(() => {
     let isMounted = true;
 
     const loadProducts = async () => {
       setIsLoading(true);
       setErrorMessage('');
-      setSearchText('');
       setSelectedBrands([]);
 
       try {
