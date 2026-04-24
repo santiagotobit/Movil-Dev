@@ -3,11 +3,11 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getApiErrorMessage } from '../api/axiosClient';
 import {
-  forgotPassword,
-  loginUser,
-  loginWithGoogle,
-  registerUser,
-  resetPassword,
+    forgotPassword,
+    loginUser,
+    loginWithGoogle,
+    registerUser,
+    resetPassword,
 } from '../api/services/authService';
 import { useCarrito } from '../context/CarritoContext';
 
@@ -39,6 +39,7 @@ export default function Login() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const googleButtonRef = useRef(null);
+  const googleButtonRegisterRef = useRef(null);
   const googleInitializedRef = useRef(false);
   const isGoogleEnabled = Boolean(GOOGLE_CLIENT_ID);
 
@@ -73,9 +74,31 @@ export default function Login() {
     navigate('/login', { replace: true });
   }, [location.search, navigate]);
 
+  const renderGoogleButtons = () => {
+    if (!window.google?.accounts?.id) return;
+    if (googleButtonRef.current) {
+      window.google.accounts.id.renderButton(googleButtonRef.current, {
+        theme: 'outline',
+        size: 'large',
+        shape: 'pill',
+        text: 'signin_with',
+        width: 360,
+      });
+    }
+    if (googleButtonRegisterRef.current) {
+      window.google.accounts.id.renderButton(googleButtonRegisterRef.current, {
+        theme: 'outline',
+        size: 'large',
+        shape: 'pill',
+        text: 'signup_with',
+        width: 360,
+      });
+    }
+  };
+
   useEffect(() => {
     const initializeGoogleButton = () => {
-      if (!window.google?.accounts?.id || !googleButtonRef.current || googleInitializedRef.current) {
+      if (!window.google?.accounts?.id || googleInitializedRef.current) {
         return;
       }
 
@@ -88,14 +111,7 @@ export default function Login() {
         use_fedcm_for_prompt: false,
       });
 
-      window.google.accounts.id.renderButton(googleButtonRef.current, {
-        theme: 'outline',
-        size: 'large',
-        shape: 'pill',
-        text: 'signin_with',
-        width: 360,
-      });
-
+      renderGoogleButtons();
       googleInitializedRef.current = true;
     };
 
@@ -135,6 +151,12 @@ export default function Login() {
       script.removeEventListener('load', handleScriptLoad);
     };
   }, [isGoogleEnabled]);
+
+  // Re-renderizar botones de Google al cambiar de tab
+  useEffect(() => {
+    if (!isGoogleEnabled || !googleInitializedRef.current) return;
+    renderGoogleButtons();
+  }, [activeTab, isGoogleEnabled]);
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -494,6 +516,26 @@ export default function Login() {
                 >
                   {isSubmitting ? 'Procesando...' : 'Crear cuenta'}
                 </button>
+
+                <div className="flex items-center gap-3 text-xs text-[color:var(--muted)]">
+                  <span className="h-px flex-1 bg-[color:var(--border)]" />
+                  o
+                  <span className="h-px flex-1 bg-[color:var(--border)]" />
+                </div>
+
+                <div className="flex justify-center">
+                  {isGoogleEnabled ? <div ref={googleButtonRegisterRef} className="min-h-10" /> : null}
+                </div>
+
+                {!isGoogleEnabled ? (
+                  <p className="text-center text-xs text-amber-700">
+                    Google Sign-In no está disponible: falta la variable VITE_GOOGLE_CLIENT_ID en el entorno de producción.
+                  </p>
+                ) : null}
+
+                {googleScriptError ? (
+                  <p className="text-center text-xs text-red-700">{googleScriptError}</p>
+                ) : null}
               </form>
             ) : null}
 
