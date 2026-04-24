@@ -1,11 +1,13 @@
 import { LogOut, Menu, Moon, Search, ShoppingCart, Sun, User, X } from 'lucide-react';
-import { useState } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useCarrito } from '../context/CarritoContext';
 import { useTheme } from '../context/ThemeContext';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const location = useLocation();
   const navigate = useNavigate();
   const { carrito, isLoggedIn, logout, currentUser, cartError } = useCarrito();
   const { theme, toggleTheme } = useTheme();
@@ -13,6 +15,21 @@ export default function Navbar() {
   
   // Calculamos el total de productos para el badge
   const totalItems = carrito.reduce((acc, item) => acc + item.cantidad, 0);
+
+  const submitSearch = (query) => {
+    const trimmed = String(query || '').trim();
+    if (!trimmed) return;
+    navigate(`/catalogo?search=${encodeURIComponent(trimmed)}`);
+    setMobileMenuOpen(false);
+  };
+
+  useEffect(() => {
+    // Si el usuario navega fuera del catálogo, limpiamos el input del navbar.
+    const isCatalogRoute = location.pathname === '/catalogo' || location.pathname.startsWith('/catalogo/');
+    if (!isCatalogRoute && searchQuery) {
+      setSearchQuery('');
+    }
+  }, [location.pathname]); // intencional: no depende de searchQuery para evitar bucles
 
   return (
     <nav className="w-full bg-[color:var(--surface)] border-b border-[color:var(--border)] sticky top-0 z-50">
@@ -98,11 +115,20 @@ export default function Navbar() {
 
         {/* Buscador */}
         <div className="flex-1 max-w-md relative hidden sm:block">
-          <input 
-            type="text" 
-            placeholder="Buscar celulares..." 
-            className="w-full bg-[color:var(--surface-muted)] border border-[color:var(--border)] rounded-full py-2 px-5 pl-12 focus:ring-2 focus:ring-purple-500 outline-none text-[color:var(--text)]"
-          />
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              submitSearch(searchQuery);
+            }}
+          >
+            <input 
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Buscar celulares..." 
+              className="w-full bg-[color:var(--surface-muted)] border border-[color:var(--border)] rounded-full py-2 px-5 pl-12 focus:ring-2 focus:ring-purple-500 outline-none text-[color:var(--text)]"
+            />
+          </form>
           <Search className="absolute left-4 top-2.5 text-[color:var(--muted)] size-5" />
         </div>
 
@@ -120,7 +146,7 @@ export default function Navbar() {
           <button
             onClick={toggleTheme}
             aria-label="Cambiar tema"
-            className="hidden sm:flex items-center justify-center rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] p-2 text-[color:var(--text)] shadow-sm transition hover:bg-[color:var(--surface-muted)]"
+            className="flex items-center justify-center rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] p-2 text-[color:var(--text)] shadow-sm transition hover:bg-[color:var(--surface-muted)]"
           >
             {theme === 'dark' ? <Sun className="size-4" /> : <Moon className="size-4" />}
           </button>
@@ -165,14 +191,34 @@ export default function Navbar() {
 
       <div className={`lg:hidden ${mobileMenuOpen ? 'block' : 'hidden'} border-t border-[color:var(--border)] bg-[color:var(--surface)] px-6 py-4`}> 
         <div className="mb-4">
-          <div className="relative">
+          <form
+            className="relative"
+            onSubmit={(e) => {
+              e.preventDefault();
+              submitSearch(searchQuery);
+            }}
+          >
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[color:var(--muted)] size-5" />
             <input 
               type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Buscar celulares..."
               className="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-muted)] py-3 pl-12 pr-4 text-[color:var(--text)] outline-none focus:border-purple-600"
             />
-          </div>
+          </form>
+        </div>
+
+        <div className="mb-4 flex items-center justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-muted)] px-4 py-3">
+          <span className="text-sm font-medium text-[color:var(--text)]">Tema</span>
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label="Cambiar tema"
+            className="inline-flex items-center justify-center rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] p-2 text-[color:var(--text)] shadow-sm transition hover:bg-[color:var(--surface-hover)]"
+          >
+            {theme === 'dark' ? <Sun className="size-4" /> : <Moon className="size-4" />}
+          </button>
         </div>
 
         <div className="flex flex-col gap-2">
