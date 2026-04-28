@@ -79,7 +79,17 @@ jobs:
           fi
 
       - name: Deploy to Railway
+        id: deploy_to_railway
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
           RAILWAY_SERVICE_ID: ${{ vars.RAILWAY_SERVICE_ID }}
         run: railway up --service "$RAILWAY_SERVICE_ID"
+
+      - name: Deploy to Render si falla Railway
+        if: failure() && steps.deploy_to_railway.outcome == 'failure'
+        env:
+          RENDER_WEBHOOK_KEY: ${{ secrets.RENDER_WEBHOOK_KEY }}
+        run: |
+          echo "Intentando deploy en Render..."
+          curl -X POST "https://api.render.com/deploy/srv-d7npo72pmmbs73cmtc40?key=$RENDER_WEBHOOK_KEY"
+        continue-on-error: true
