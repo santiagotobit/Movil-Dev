@@ -52,44 +52,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - name: Install Railway CLI
-        run: npm install -g @railway/cli
-
-      - name: Validate Railway token
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: |
-          if [ -z "$RAILWAY_TOKEN" ]; then
-            echo "RAILWAY_TOKEN no configurado"
-            exit 1
-          fi
-
-      - name: Validate Railway service
-        env:
-          RAILWAY_SERVICE_ID: ${{ vars.RAILWAY_SERVICE_ID }}
-        run: |
-          if [ -z "$RAILWAY_SERVICE_ID" ]; then
-            echo "RAILWAY_SERVICE_ID no configurado"
-            exit 1
-          fi
-
-      - name: Deploy to Railway
-        id: deploy_to_railway
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-          RAILWAY_SERVICE_ID: ${{ vars.RAILWAY_SERVICE_ID }}
-        run: railway up --service "$RAILWAY_SERVICE_ID"
-
-      - name: Deploy to Render si falla Railway
-        if: failure() && steps.deploy_to_railway.outcome == 'failure'
+      - name: Deploy to Render
         env:
           RENDER_WEBHOOK_KEY: ${{ secrets.RENDER_WEBHOOK_KEY }}
         run: |
-          echo "Intentando deploy en Render..."
+          echo "Desplegando en Render..."
           curl -X POST "https://api.render.com/deploy/srv-d7npo72pmmbs73cmtc40?key=$RENDER_WEBHOOK_KEY"
-        continue-on-error: true
