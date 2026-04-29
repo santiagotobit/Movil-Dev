@@ -210,10 +210,10 @@ def create_paypal_order(
     user: User,
     customer: Any,
 ) -> dict[str, str]:
-    # PRIMERO: Crear la orden en la base de datos con estado "pending"
-    from orders.services import create_order_from_cart
+    from orders.services import get_or_create_pending_order_for_checkout
+
     try:
-        order = create_order_from_cart(db, user)
+        order = get_or_create_pending_order_for_checkout(db, user)
         order_id_db = order.id
     except Exception as e:
         raise ConflictError(f"No se pudo crear la orden: {str(e)}")
@@ -337,10 +337,10 @@ def create_epayco_session(
     user: User,
     customer: Any,
 ) -> dict[str, Any]:
-    # PRIMERO: Crear la orden en la base de datos con estado "pending"
-    from orders.services import create_order_from_cart
+    from orders.services import get_or_create_pending_order_for_checkout
+
     try:
-        order = create_order_from_cart(db, user)
+        order = get_or_create_pending_order_for_checkout(db, user)
         order_id_db = order.id
     except Exception as e:
         raise ConflictError(f"No se pudo crear la orden: {str(e)}")
