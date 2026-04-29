@@ -45,3 +45,94 @@
 - **Despliegue:** - Ya hecho: backend subido a Render, frontend publicado en Vercel. (Hecho) - Pendiente: automatizar backups y configurar alertas de monitoreo. (Por hacer)
   Cliente (Frontend) → API Gateway (Backend) → Base de Datos → Servicios externos (pagos, notificaciones, envío)
   CI/CD Pipeline automatiza pruebas y despliegues.
+
+Movil-Dev/
+├── backend/
+│ ├── auth/
+│ │ ├── dependencies.py
+│ │ ├── email_service.py
+│ │ ├── models.py
+│ │ ├── router.py
+│ │ ├── schemas.py
+│ │ └── services.py
+│ ├── cart/
+│ │ ├── models.py
+│ │ ├── router.py
+│ │ ├── schemas.py
+│ │ └── services.py
+│ ├── orders/
+│ │ ├── models.py
+│ │ ├── router.py
+│ │ ├── schemas.py
+│ │ └── services.py
+│ ├── payments/
+│ │ ├── router.py
+│ │ ├── schemas.py
+│ │ └── services.py
+│ ├── products/
+│ │ ├── models.py
+│ │ ├── router.py
+│ │ ├── schemas.py
+│ │ └── services.py
+│ ├── users/
+│ │ ├── constants.py
+│ │ ├── models.py
+│ │ └── schemas.py
+│ ├── cloudinary_utils.py
+│ ├── flask_migrate_app.py
+│ └── main.py
+├── database/
+│ └── core/
+│ ├── database.py
+│ ├── errors.py
+│ └── security.py
+├── frontend/
+│ ├── public/
+│ │ ├── favicon.png
+│ │ └── icons.svg
+│ ├── src/
+│ │ ├── api/
+│ │ │ ├── mappers/
+│ │ │ │ ├── productMapper.js
+│ │ │ │ └── productMapper.test.js
+│ │ │ ├── services/
+│ │ │ │ ├── authService.js
+│ │ │ │ ├── cartService.js
+│ │ │ │ ├── ordersService.js
+│ │ │ │ ├── paymentService.js
+│ │ │ │ └── productsService.js
+│ │ │ └── axiosClient.js
+│ │ ├── assets/
+│ │ ├── components/
+│ │ ├── context/
+│ │ ├── App.jsx
+│ │ ├── index.css
+│ │ └── main.jsx
+│ ├── package.json
+│ ├── package-lock.json
+│ ├── vite.config.js
+│ └── vercel.json
+├── migrations/
+│ ├── versions/
+│ │ ├── 20240424_add_discount_percent_to_product.py
+│ │ └── c1844c8af97e_create_cart_items_table.py
+│ ├── alembic.ini
+│ ├── env.py
+│ └── script.py.mako
+├── tests/
+│ ├── auth/
+│ ├── cart/
+│ ├── e2e/
+│ ├── integration/
+│ ├── maintainability/
+│ ├── products/
+│ ├── unit/
+│ └── conftest.py
+├── docs/
+│ ├── dominio-modelo-negocio.md
+│ └── testing.md
+├── Dockerfile
+├── README.md
+├── requirements.txt
+├── pyproject.toml
+└── varios docs/scripts sueltos

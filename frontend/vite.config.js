@@ -2,12 +2,10 @@ import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
-    tailwindcss(), //agregamos el tailwind
-    
+    tailwindcss(), // 🔥 ESTA LÍNEA ES LA CLAVE
   ],
   server: {
     proxy: {
@@ -18,4 +16,5 @@ export default defineConfig({
       },
     },
   },
+
 })

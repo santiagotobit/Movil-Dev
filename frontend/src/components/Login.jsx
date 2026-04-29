@@ -3,11 +3,11 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getApiErrorMessage } from '../api/axiosClient';
 import {
-    forgotPassword,
-    loginUser,
-    loginWithGoogle,
-    registerUser,
-    resetPassword,
+  forgotPassword,
+  loginUser,
+  loginWithGoogle,
+  registerUser,
+  resetPassword,
 } from '../api/services/authService';
 import { useCarrito } from '../context/CarritoContext';
 
@@ -314,7 +314,7 @@ export default function Login() {
           (e) =>
             e?.loc?.includes('password') &&
             (e?.msg?.toLowerCase().includes('longitud mínima') ||
-             e?.msg?.toLowerCase().includes('at least 8 characters'))
+             e?.msg?.toLowerCase().includes('Al Menos 8 caracteres'))
         );
         if (pwdError) {
           setErrorMsg('La contraseña debe tener al menos 8 caracteres.');
@@ -394,12 +394,16 @@ export default function Login() {
   return (
     <div className="min-h-[calc(100vh-80px)] bg-[color:var(--bg)] text-[color:var(--text)] px-4 py-10 md:py-14 flex items-center justify-center">
       <div className="w-full max-w-2xl">
-        <div className="flex flex-col items-center gap-4 mb-8">
-          <div className="inline-flex items-center justify-center rounded-[1.5rem] bg-gradient-to-br from-blue-600 to-purple-600 w-16 h-16 text-white font-bold text-xl shadow-xl">
-            MD
-          </div>
+        <div className="flex flex-col items-center gap-4 mb-2">
+          
+            <img
+                src="https://res.cloudinary.com/dms34zmay/image/upload/v1777228417/u015tu0fpx2xuo84zkeg.png"
+                alt="Logo de Móvil Dev"
+                className="relative z-10 h-40 w-40 object-contain drop-shadow-xl"
+              />
+          
           <div className="text-center">
-            <h1 className="text-3xl font-bold">Móvil Dev</h1>
+            <h1 className="text-3xl font-bold">Movil Dev</h1>
             <p className="mt-2 text-sm text-[color:var(--muted)] max-w-md mx-auto">
               Inicia sesión para seguir con tu compra y acceder a tus pedidos, descuentos y favoritos.
             </p>
@@ -428,7 +432,7 @@ export default function Login() {
               onClick={() => setActiveTab('register')}
               className={`flex-1 rounded-[1rem] py-3 text-sm font-semibold transition ${
                 activeTab === 'register'
-                  ? 'bg-[color:var(--surface)] text-[color:var(--text)] shadow-sm'
+                  ? 'bg-[color:var(--session)] text-[color:var(--text)] shadow-sm'
                   : 'text-[color:var(--muted)] hover:text-[color:var(--text)]'
               }`}
             >
