@@ -18,6 +18,7 @@ import Perfil from './components/Perfil';
 import ProductCard from './components/ProductCard';
 import Success from './components/Success';
 import { ThemeProvider } from './context/ThemeContext';
+import './index.css';
 
 // Datos de prueba (Luego vendrán de tu backend)
 const productsFallback = [
