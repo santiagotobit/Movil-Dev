@@ -26,6 +26,3 @@ class OrderItem(Base):
     price: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False)  # Precio unitario
 
     order = relationship("Order", back_populates="items")
-    price: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False)  # Precio unitario
-
-    order = relationship("Order", back_populates="items")

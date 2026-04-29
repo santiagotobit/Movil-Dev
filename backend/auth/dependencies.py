@@ -92,4 +92,3 @@ def get_optional_current_user(
         return None
 
     return user
-    return user

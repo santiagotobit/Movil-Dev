@@ -2,7 +2,8 @@
 
 import httpx
 from auth.dependencies import get_current_user
-from fastapi import APIRouter, BackgroundTasks, Depends, Header, Query, Request
+import requests
+from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException, Query, Request
 from orders.models import Order
 from payments.schemas import (CheckoutCustomerData, EpaycoSessionResponse,
                               PayPalCaptureResponse, PayPalCreateOrderResponse)
@@ -49,8 +50,7 @@ def create_epayco_checkout_session(
     )
 
 
-@router.api_route("/epayco/confirmation", methods=["GET", "POST"])
-async def receive_epayco_confirmation(
+async def _handle_epayco_confirmation(
     request: Request, background_tasks: BackgroundTasks
 ) -> dict[str, bool]:
     """Recibe la confirmacion enviada por ePayco y actualiza la orden automáticamente."""
@@ -84,6 +84,22 @@ async def receive_epayco_confirmation(
         )
 
     return {"received": True}
+
+
+@router.post("/epayco/confirmation")
+async def receive_epayco_confirmation_post(
+    request: Request,
+    background_tasks: BackgroundTasks,
+) -> dict[str, bool]:
+    return await _handle_epayco_confirmation(request, background_tasks)
+
+
+@router.get("/epayco/confirmation")
+async def receive_epayco_confirmation_get(
+    request: Request,
+    background_tasks: BackgroundTasks,
+) -> dict[str, bool]:
+    return await _handle_epayco_confirmation(request, background_tasks)
 
 
 @router.api_route("/paypal/webhook", methods=["POST"])
@@ -157,5 +173,4 @@ async def paypal_webhook(
                     return {"received": False}
                 background_tasks.add_task(httpx.post, f"http://localhost:8000/orders/order/mark-cancelled/{order_id_int}")
                 return {"received": True}
-    return {"received": False}
     return {"received": False}
