@@ -1,5 +1,5 @@
 import { Loader2, Pencil, Plus, Power, Settings2, Shield, Trash2 } from 'lucide-react';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCartTaxSettings, updateCartTaxSettings } from '../api/services/cartService';
 import {
@@ -169,7 +169,7 @@ function OrderRow({
                 Devuelto
               </button>
             )}
-            {order.status !== 'cancelled' && order.status !== 'shipped' && (
+            {(order.status === 'pending' || order.status === 'paid') && (
               <button
                 type="button"
                 disabled={isSaving}
@@ -554,6 +554,13 @@ export default function AdminDashboard() {
   const [salesStartDate, setSalesStartDate] = useState('');
   const [salesEndDate, setSalesEndDate] = useState('');
 
+  const [reasonModal, setReasonModal] = useState({
+    isOpen: false,
+    orderId: null,
+    status: '',
+    reason: '',
+  });
+
   const isAdmin = currentUser?.role === 'administrador';
   const visibleProducts = useMemo(() => products.slice(0, 100), [products]);
   const referenceToProductMap = useMemo(() => {
@@ -662,29 +669,29 @@ export default function AdminDashboard() {
     loadOrders();
   }, [isAdmin, selectedModule]);
 
-  useEffect(() => {
+  const loadSalesReport = useCallback(async () => {
     if (!isAdmin || selectedModule !== 'ventas') {
       return;
     }
 
-    const loadReport = async () => {
-      setSalesLoading(true);
-      setErrorMsg('');
-      try {
-        const data = await getSalesReport({
-          startDate: salesStartDate || undefined,
-          endDate: salesEndDate || undefined,
-        });
-        setSalesReport(data);
-      } catch (error) {
-        setErrorMsg(error?.response?.data?.detail || 'No se pudo cargar el reporte de ventas.');
-      } finally {
-        setSalesLoading(false);
-      }
-    };
+    setSalesLoading(true);
+    setErrorMsg('');
+    try {
+      const data = await getSalesReport({
+        startDate: salesStartDate || undefined,
+        endDate: salesEndDate || undefined,
+      });
+      setSalesReport(data);
+    } catch (error) {
+      setErrorMsg(error?.response?.data?.detail || 'No se pudo cargar el reporte de ventas.');
+    } finally {
+      setSalesLoading(false);
+    }
+  }, [isAdmin, selectedModule, salesStartDate, salesEndDate]);
 
-    loadReport();
-  }, [isAdmin, selectedModule]);
+  useEffect(() => {
+    loadSalesReport();
+  }, [loadSalesReport]);
 
   const resetMessages = () => {
     setErrorMsg('');
@@ -916,21 +923,11 @@ export default function AdminDashboard() {
     setSuccessMsg('Descuento eliminado correctamente.');
   };
 
-  const handleUpdateOrderStatus = async (orderId, newStatus) => {
+  const handleUpdateOrderStatus = async (orderId, newStatus, reason) => {
     resetMessages();
     setIsSaving(true);
 
     try {
-      const requiresReason = newStatus === 'cancelled' || newStatus === 'refunded';
-      const reason = requiresReason
-        ? window.prompt(
-          newStatus === 'cancelled'
-            ? 'Motivo de cancelación (opcional):'
-            : 'Motivo de devolución (opcional):',
-          '',
-        )
-        : undefined;
-
       const response = await updateOrderStatus(orderId, newStatus, reason);
 
       setOrders((prev) => prev.map((order) => (
@@ -952,20 +949,36 @@ export default function AdminDashboard() {
 
   const handleReloadSalesReport = async () => {
     resetMessages();
-    setSalesLoading(true);
+    await loadSalesReport();
+    setSuccessMsg('Reporte actualizado correctamente.');
+  };
 
-    try {
-      const data = await getSalesReport({
-        startDate: salesStartDate || undefined,
-        endDate: salesEndDate || undefined,
-      });
-      setSalesReport(data);
-      setSuccessMsg('Reporte actualizado correctamente.');
-    } catch (error) {
-      setErrorMsg(error?.response?.data?.detail || 'No se pudo cargar el reporte de ventas.');
-    } finally {
-      setSalesLoading(false);
+  const handleRequestOrderStatusChange = (orderId, newStatus) => {
+    const requiresReason = newStatus === 'cancelled' || newStatus === 'refunded';
+    if (!requiresReason) {
+      handleUpdateOrderStatus(orderId, newStatus);
+      return;
     }
+
+    setReasonModal({
+      isOpen: true,
+      orderId,
+      status: newStatus,
+      reason: '',
+    });
+  };
+
+  const closeReasonModal = () => {
+    setReasonModal({ isOpen: false, orderId: null, status: '', reason: '' });
+  };
+
+  const submitReasonModal = async () => {
+    if (!reasonModal.orderId || !reasonModal.status) {
+      closeReasonModal();
+      return;
+    }
+    await handleUpdateOrderStatus(reasonModal.orderId, reasonModal.status, reasonModal.reason);
+    closeReasonModal();
   };
 
   const handleToggleOrderDetails = (orderId) => {
@@ -991,6 +1004,44 @@ export default function AdminDashboard() {
     <div className="flex max-w-7xl mx-auto px-2 py-10 gap-6">
       <Sidebar selected={selectedModule} onSelect={setSelectedModule} />
       <main className="flex-1 space-y-6">
+        {reasonModal.isOpen ? (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+            <div className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl">
+              <h2 className="text-lg font-semibold text-slate-900">
+                {reasonModal.status === 'cancelled' ? 'Motivo de cancelación' : 'Motivo de devolución'}
+              </h2>
+              <p className="mt-1 text-sm text-slate-600">
+                Puedes dejarlo vacío si no aplica.
+              </p>
+
+              <textarea
+                value={reasonModal.reason}
+                onChange={(e) => setReasonModal((prev) => ({ ...prev, reason: e.target.value }))}
+                className="mt-4 w-full rounded-2xl border border-slate-300 px-3 py-2 text-sm text-slate-800 min-h-28"
+                placeholder="Escribe el motivo..."
+              />
+
+              <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                <button
+                  type="button"
+                  onClick={closeReasonModal}
+                  className="rounded-2xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={submitReasonModal}
+                  disabled={isSaving}
+                  className="rounded-2xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
+                >
+                  Guardar
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
         <header className="rounded-3xl border border-indigo-100 bg-gradient-to-r from-indigo-50 to-cyan-50 p-6">
           <div className="flex items-center gap-3 text-indigo-700 mb-2">
             <Shield className="size-5" />
@@ -1306,7 +1357,7 @@ export default function AdminDashboard() {
                             expanded={expandedOrderId === order.id}
                             isSaving={isSaving}
                             onToggleDetails={handleToggleOrderDetails}
-                            onUpdateStatus={handleUpdateOrderStatus}
+                            onUpdateStatus={handleRequestOrderStatusChange}
                           />
                         </React.Fragment>
                       ))}

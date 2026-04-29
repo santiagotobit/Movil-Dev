@@ -69,11 +69,10 @@ def list_all_orders(current_admin: User = Depends(get_current_admin), db: Sessio
         .all()
     )
 
-@router.put("/admin/{order_id}/status")
+@router.put("/admin/{order_id}/status", response_model=OrderSchema)
 def update_order_status_admin(order_id: int, request: UpdateStatusRequest, current_admin: User = Depends(get_current_admin), db: Session = Depends(get_db)):
     """Actualiza el estado de una orden para administradores."""
-    update_order_status(db, order_id, request.status, request.reason)
-    return {"success": True}
+    return update_order_status(db, order_id, request.status, request.reason)
 
 @router.get("/admin/{order_id}/items", response_model=OrderSchema)
 def get_order_items_admin(order_id: int, current_admin: User = Depends(get_current_admin), db: Session = Depends(get_db)):
