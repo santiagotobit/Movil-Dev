@@ -409,5 +409,3 @@ def merge_guest_cart(
             pass
 
     return _build_items_for_authenticated(db, current_user.id)
-
-    return _build_items_for_authenticated(db, current_user.id)

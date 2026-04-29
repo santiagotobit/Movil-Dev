@@ -2,6 +2,7 @@
 
 import os
 import sys
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -62,7 +63,18 @@ def _parse_cors_origin_regex() -> str | None:
     # Permite dominios de preview/branch en Vercel.
     return r"https://.*\.vercel\.app"
 
-app = FastAPI(title="API de Autenticación")
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    """Inicializa la base de datos al arrancar la aplicación."""
+    engine = get_engine()
+    Base.metadata.create_all(bind=engine)
+    ensure_user_role_column(engine)
+    ensure_products_new_columns(engine)
+    yield
+
+
+app = FastAPI(title="API de Autenticación", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -108,15 +120,6 @@ def handle_conflict(_: Request, exc: ConflictError):
     return _error_response(409, exc)
 
 
-@app.on_event("startup")
-async def startup_db() -> None:
-    """Inicializa la base de datos al arrancar la aplicación."""
-    engine = get_engine()
-    Base.metadata.create_all(bind=engine)
-    ensure_user_role_column(engine)
-    ensure_products_new_columns(engine)
-
-
 app.include_router(auth_router)
 app.include_router(products_router)
 app.include_router(cart_router)
@@ -125,5 +128,4 @@ app.include_router(payments_router)
 # Importa y registra el router de órdenes
 from orders.router import router as orders_router
 
-app.include_router(orders_router)
 app.include_router(orders_router)

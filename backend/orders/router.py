@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from users.models import User
 
 from database.core.database import get_db
+from database.core.errors import NotFoundError
 
 router = APIRouter(prefix="/orders", tags=["Orders"])
 
@@ -26,7 +27,7 @@ def get_order(order_id: int, current_user: User = Depends(get_current_user), db:
     """Obtiene una orden específica del usuario autenticado."""
     order = db.query(Order).filter(Order.id == order_id, Order.user_id == current_user.id).first()
     if not order:
-        return {"detail": "Orden no encontrada"}
+        raise NotFoundError("Orden no encontrada.")
     return order
 
 @router.post("/", response_model=OrderSchema, status_code=status.HTTP_201_CREATED)

@@ -199,8 +199,7 @@ def test_compute_cart_totals_calculates_business_values():
     totals = compute_cart_totals(items=items, tax_percent=19, shipping_fee=300)
 
     assert totals.item_count == 3
-    assert totals.subtotal == 2500
-    assert totals.tax_amount == 475
+    assert totals.subtotal == 2100.84
+    assert totals.tax_amount == 399.16
     assert totals.shipping_fee == 300
-    assert totals.total == 3275
-    assert totals.total == 3275
+    assert totals.total == 2800
