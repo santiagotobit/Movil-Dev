@@ -5,6 +5,13 @@ import { getApiErrorMessage } from '../api/axiosClient';
 import { capturePayPalOrder } from '../api/services/paymentService';
 import { useCarrito } from '../context/CarritoContext';
 
+const GENERIC_CART_INTACT_ERROR = 'Upps! Algo salió mal. Tu carrito quedó intacto.';
+
+function buildCartIntactError(details) {
+  const message = String(details || '').trim();
+  return message ? `${GENERIC_CART_INTACT_ERROR} (${message})` : GENERIC_CART_INTACT_ERROR;
+}
+
 export default function Success() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -51,7 +58,7 @@ export default function Success() {
         setSuccess(true);
         await limpiarCarrito();
       } else {
-        setError('El pago no fue aprobado. Puedes intentar nuevamente desde el carrito.');
+        setError(GENERIC_CART_INTACT_ERROR);
       }
 
       setLoading(false);
@@ -59,7 +66,7 @@ export default function Success() {
 
     const finishPayPal = async () => {
       if (!token) {
-        setError('Token no encontrado');
+        setError(GENERIC_CART_INTACT_ERROR);
         setLoading(false);
         return;
       }
@@ -70,10 +77,10 @@ export default function Success() {
           setSuccess(true);
           await limpiarCarrito();
         } else {
-          setError('Error en el pago');
+          setError(GENERIC_CART_INTACT_ERROR);
         }
       } catch (err) {
-        setError(getApiErrorMessage(err));
+        setError(buildCartIntactError(getApiErrorMessage(err)));
       } finally {
         setLoading(false);
       }
@@ -112,7 +119,7 @@ export default function Success() {
               </div>
               <h1 className="text-3xl font-bold text-[color:var(--text)]">Pago exitoso</h1>
               <p className="mt-3 text-sm leading-6 text-[color:var(--muted)]">
-                Tu compra fue confirmada correctamente. Te llevamos de vuelta a la tienda sin mostrar factura externa.
+                Compra exitosa, vamos. Seguir mirando productos!!
               </p>
             </>
           )}
@@ -122,29 +129,52 @@ export default function Success() {
               <div className="mx-auto mb-5 flex size-16 items-center justify-center rounded-2xl bg-red-50 text-red-600">
                 <XCircle className="size-8" />
               </div>
-              <h1 className="text-3xl font-bold text-[color:var(--text)]">Pago no confirmado</h1>
+              <h1 className="text-3xl font-bold text-[color:var(--text)]">No pudimos confirmar tu pago</h1>
               <p className="mt-3 text-sm leading-6 text-red-600">{error}</p>
             </>
           )}
 
-          <div className="mt-8 grid gap-3 sm:grid-cols-2">
-            <button
-              type="button"
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-purple-700 via-fuchsia-700 to-slate-950 px-5 py-3 text-sm font-bold text-white shadow-xl shadow-purple-500/20 transition hover:-translate-y-0.5"
-              onClick={() => navigate('/')}
-            >
-              <Home className="size-4" />
-              Inicio
-            </button>
-            <button
-              type="button"
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[color:var(--border)] px-5 py-3 text-sm font-bold text-[color:var(--text)] transition hover:bg-[color:var(--surface-muted)]"
-              onClick={() => navigate('/catalogo')}
-            >
-              <ShoppingBag className="size-4" />
-              Catálogo
-            </button>
-          </div>
+          {!loading && success && (
+            <div className="mt-8 grid gap-3 sm:grid-cols-2">
+              <button
+                type="button"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-purple-700 via-fuchsia-700 to-slate-950 px-5 py-3 text-sm font-bold text-white shadow-xl shadow-purple-500/20 transition hover:-translate-y-0.5"
+                onClick={() => navigate('/catalogo')}
+              >
+                <ShoppingBag className="size-4" />
+                Seguir mirando productos
+              </button>
+              <button
+                type="button"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[color:var(--border)] px-5 py-3 text-sm font-bold text-[color:var(--text)] transition hover:bg-[color:var(--surface-muted)]"
+                onClick={() => navigate('/')}
+              >
+                <Home className="size-4" />
+                Inicio
+              </button>
+            </div>
+          )}
+
+          {!loading && error && (
+            <div className="mt-8 grid gap-3 sm:grid-cols-2">
+              <button
+                type="button"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-purple-700 via-fuchsia-700 to-slate-950 px-5 py-3 text-sm font-bold text-white shadow-xl shadow-purple-500/20 transition hover:-translate-y-0.5"
+                onClick={() => navigate('/carrito')}
+              >
+                <ShoppingBag className="size-4" />
+                Continuar pago
+              </button>
+              <button
+                type="button"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[color:var(--border)] px-5 py-3 text-sm font-bold text-[color:var(--text)] transition hover:bg-[color:var(--surface-muted)]"
+                onClick={() => navigate('/catalogo')}
+              >
+                <ShoppingBag className="size-4" />
+                Agregar más productos
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </section>
