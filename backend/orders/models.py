@@ -1,5 +1,4 @@
-from sqlalchemy import (Column, DateTime, ForeignKey, Integer, Numeric, String,
-                        func)
+from sqlalchemy import DateTime, ForeignKey, Integer, Numeric, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database.core.database import Base
@@ -14,6 +13,17 @@ class Order(Base):
     subtotal: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False)
     tax: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False)
     total: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False)
+    customer_name: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    customer_email: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    customer_phone: Mapped[str | None] = mapped_column(String(40), nullable=True)
+    delivery_address: Mapped[str | None] = mapped_column(String(300), nullable=True)
+    delivery_city: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    payment_provider: Mapped[str | None] = mapped_column(String(40), nullable=True)
+    payment_method: Mapped[str | None] = mapped_column(String(80), nullable=True)
+    paid_at: Mapped[DateTime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    invoice_pdf_path: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    invoice_email_sent_to: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    invoice_email_sent_at: Mapped[DateTime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     items = relationship("OrderItem", back_populates="order")
 

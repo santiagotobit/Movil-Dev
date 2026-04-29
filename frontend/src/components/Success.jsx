@@ -2,6 +2,7 @@ import { CheckCircle2, Home, Loader2, ShoppingBag, XCircle } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getApiErrorMessage } from '../api/axiosClient';
+import { markEpaycoOrderPaid } from '../api/services/ordersService';
 import { capturePayPalOrder } from '../api/services/paymentService';
 import { useCarrito } from '../context/CarritoContext';
 
@@ -23,6 +24,7 @@ export default function Success() {
 
     const provider = searchParams.get('provider');
     const token = searchParams.get('token');
+    const orderId = searchParams.get('order_id') || localStorage.getItem('pending_checkout_order_id');
 
     const finishEpayco = async () => {
       const responseCode = (
@@ -48,6 +50,10 @@ export default function Success() {
       );
 
       if (isApproved) {
+        if (orderId) {
+          await markEpaycoOrderPaid(orderId);
+        }
+        localStorage.removeItem('pending_checkout_order_id');
         setSuccess(true);
         await limpiarCarrito();
       } else {
@@ -65,8 +71,9 @@ export default function Success() {
       }
 
       try {
-        const data = await capturePayPalOrder(token);
+        const data = await capturePayPalOrder(token, orderId);
         if (data.success) {
+          localStorage.removeItem('pending_checkout_order_id');
           setSuccess(true);
           await limpiarCarrito();
         } else {

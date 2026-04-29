@@ -1,4 +1,4 @@
-import { Loader2, Pencil, Plus, Power, Settings2, Shield, Trash2 } from 'lucide-react';
+import { FileText, Loader2, Mail, Pencil, Plus, Power, Settings2, Shield, Trash2 } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCartTaxSettings, updateCartTaxSettings } from '../api/services/cartService';
@@ -10,7 +10,7 @@ import {
     updateProduct,
     uploadProductImage,
 } from '../api/services/productsService';
-import { getAllOrders, updateOrderStatus } from '../api/services/ordersService';
+import { downloadOrderInvoice, getAllOrders, sendOrderInvoice, updateOrderStatus } from '../api/services/ordersService';
 import { useCarrito } from '../context/CarritoContext';
 import Sidebar from './Sidebar';
 
@@ -671,8 +671,8 @@ export default function AdminDashboard() {
     setIsSaving(true);
 
     try {
-      await updateOrderStatus(orderId, newStatus);
-      setOrders((prev) => prev.map((order) => (order.id === orderId ? { ...order, status: newStatus } : order)));
+      const updatedOrder = await updateOrderStatus(orderId, newStatus);
+      setOrders((prev) => prev.map((order) => (order.id === orderId ? updatedOrder : order)));
       setSuccessMsg('Estado de la orden actualizado correctamente.');
     } catch (error) {
       setErrorMsg(error?.response?.data?.detail || 'No se pudo actualizar el estado de la orden.');
@@ -683,6 +683,30 @@ export default function AdminDashboard() {
 
   const handleToggleOrderDetails = (orderId) => {
     setExpandedOrderId((prev) => (prev === orderId ? null : orderId));
+  };
+
+  const handleDownloadInvoice = async (orderId) => {
+    resetMessages();
+    try {
+      await downloadOrderInvoice(orderId);
+    } catch (error) {
+      setErrorMsg(error?.response?.data?.detail || 'No se pudo abrir la factura PDF.');
+    }
+  };
+
+  const handleSendInvoice = async (orderId) => {
+    resetMessages();
+    setIsSaving(true);
+
+    try {
+      const updatedOrder = await sendOrderInvoice(orderId);
+      setOrders((prev) => prev.map((order) => (order.id === orderId ? updatedOrder : order)));
+      setSuccessMsg(`Factura enviada a ${updatedOrder.invoice_email_sent_to || updatedOrder.customer_email}.`);
+    } catch (error) {
+      setErrorMsg(error?.response?.data?.detail || 'No se pudo enviar la factura. Revisa Mailtrap y el correo del cliente.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   if (isAuthLoading || isLoading) {
@@ -1027,7 +1051,7 @@ export default function AdminDashboard() {
                                 'bg-slate-200 text-slate-700'
                               }`}>
                                 {order.status === 'pending' ? 'Pendiente' :
-                                 order.status === 'paid' ? 'Pagado' :
+                                 order.status === 'paid' ? 'Pago exitoso' :
                                  order.status === 'shipped' ? 'Enviado' :
                                  order.status === 'cancelled' ? 'Cancelado' :
                                  order.status}
@@ -1063,7 +1087,18 @@ export default function AdminDashboard() {
                                     onClick={() => handleUpdateOrderStatus(order.id, 'shipped')}
                                     className="inline-flex items-center gap-1 rounded-lg border border-blue-300 px-3 py-1.5 text-blue-700 hover:bg-blue-50 disabled:opacity-60"
                                   >
-                                    Enviar
+                                    Marcar enviado
+                                  </button>
+                                )}
+                                {order.status === 'paid' && (
+                                  <button
+                                    type="button"
+                                    disabled={isSaving || !order.customer_email}
+                                    onClick={() => handleSendInvoice(order.id)}
+                                    className="inline-flex items-center gap-1 rounded-lg border border-emerald-300 px-3 py-1.5 text-emerald-700 hover:bg-emerald-50 disabled:opacity-60"
+                                  >
+                                    <Mail className="size-3" />
+                                    Enviar factura
                                   </button>
                                 )}
                                 {order.status !== 'cancelled' && order.status !== 'shipped' && (
@@ -1076,14 +1111,87 @@ export default function AdminDashboard() {
                                     Cancelar
                                   </button>
                                 )}
+                                {order.invoice_pdf_path && (
+                                  <button
+                                    type="button"
+                                    disabled={isSaving}
+                                    onClick={() => handleDownloadInvoice(order.id)}
+                                    className="inline-flex items-center gap-1 rounded-lg border border-slate-300 px-3 py-1.5 text-slate-700 hover:bg-slate-100 disabled:opacity-60"
+                                  >
+                                    <FileText className="size-3" />
+                                    Factura
+                                  </button>
+                                )}
                               </div>
                             </td>
                           </tr>
                           {expandedOrderId === order.id ? (
                             <tr key={`details-${order.id}`} className="bg-slate-50">
                               <td colSpan={8} className="px-4 py-4">
-                                <div className="rounded-2xl border border-slate-200 bg-white p-4">
-                                  <h3 className="font-semibold text-slate-800 mb-3">Items de la orden</h3>
+                                <div className="rounded-2xl border border-slate-200 bg-white p-4 space-y-4">
+                                  <div>
+                                    <h3 className="font-semibold text-slate-800 mb-3">Datos de factura</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-sm">
+                                      <div className="rounded-xl border border-slate-200 p-3">
+                                        <p className="text-xs font-semibold text-slate-500 uppercase">Receptor</p>
+                                        <p className="text-slate-800">{order.customer_name || 'No registrado'}</p>
+                                        <p className="text-slate-600 break-all">{order.customer_email || 'Sin correo de factura'}</p>
+                                      </div>
+                                      <div className="rounded-xl border border-slate-200 p-3">
+                                        <p className="text-xs font-semibold text-slate-500 uppercase">Entrega</p>
+                                        <p className="text-slate-800">{order.delivery_address || 'No registrada'}</p>
+                                        <p className="text-slate-600">{order.delivery_city || ''}</p>
+                                      </div>
+                                      <div className="rounded-xl border border-slate-200 p-3">
+                                        <p className="text-xs font-semibold text-slate-500 uppercase">Pago</p>
+                                        <p className="text-slate-800">{order.payment_provider || 'No registrado'}</p>
+                                        <p className="text-slate-600">{order.payment_method || 'No registrado'}</p>
+                                      </div>
+                                      <div className="rounded-xl border border-slate-200 p-3">
+                                        <p className="text-xs font-semibold text-slate-500 uppercase">Factura PDF</p>
+                                        <p className="text-slate-800">{order.invoice_pdf_path ? 'Generada' : 'No generada'}</p>
+                                        {order.invoice_pdf_path ? (
+                                          <button
+                                            type="button"
+                                            onClick={() => handleDownloadInvoice(order.id)}
+                                            className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-indigo-700 hover:text-indigo-900"
+                                          >
+                                            <FileText className="size-3" />
+                                            Ver PDF
+                                          </button>
+                                        ) : null}
+                                      </div>
+                                      <div className="rounded-xl border border-slate-200 p-3">
+                                        <p className="text-xs font-semibold text-slate-500 uppercase">Envio por correo</p>
+                                        <p className="text-slate-800 break-all">{order.invoice_email_sent_to || 'Pendiente'}</p>
+                                        <p className="text-slate-600">
+                                          {order.invoice_email_sent_at
+                                            ? new Date(order.invoice_email_sent_at).toLocaleString('es-CO')
+                                            : 'Sin fecha de envio'}
+                                        </p>
+                                        {order.status === 'paid' ? (
+                                          <button
+                                            type="button"
+                                            disabled={isSaving || !order.customer_email}
+                                            onClick={() => handleSendInvoice(order.id)}
+                                            className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-emerald-700 hover:text-emerald-900 disabled:opacity-60"
+                                          >
+                                            <Mail className="size-3" />
+                                            Enviar factura
+                                          </button>
+                                        ) : null}
+                                      </div>
+                                      <div className="rounded-xl border border-slate-200 p-3">
+                                        <p className="text-xs font-semibold text-slate-500 uppercase">Pago confirmado</p>
+                                        <p className="text-slate-800">
+                                          {order.paid_at ? new Date(order.paid_at).toLocaleString('es-CO') : 'Pendiente'}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div>
+                                    <h3 className="font-semibold text-slate-800 mb-3">Items de la orden</h3>
                                   {order.items?.length ? (
                                     <div className="overflow-x-auto">
                                       <table className="min-w-full text-sm">
@@ -1110,6 +1218,7 @@ export default function AdminDashboard() {
                                   ) : (
                                     <p className="text-sm text-slate-500">No hay items registrados para esta orden.</p>
                                   )}
+                                  </div>
                                 </div>
                               </td>
                             </tr>

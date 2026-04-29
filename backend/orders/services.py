@@ -1,3 +1,6 @@
+from datetime import datetime, timezone
+from typing import Any
+
 from cart.services import compute_cart_totals, list_items_for_user
 from orders.models import Order, OrderItem
 from products.models import Product
@@ -108,6 +111,129 @@ def update_order_status(db: Session, order_id: int, status: str):
     if not order:
         raise ConflictError("Orden no encontrada.")
     order.status = status
+    if status == "paid":
+        _ensure_paid_invoice(db, order)
+    db.commit()
+    db.refresh(order)
+    return order
+
+
+def save_checkout_customer(
+    db: Session,
+    *,
+    order: Order,
+    customer: Any,
+    provider: str,
+    payment_method: str,
+) -> Order:
+    """Persiste los datos necesarios para facturar la orden."""
+    order.customer_name = getattr(customer, "nombre", None)
+    order.customer_email = getattr(customer, "correo", None)
+    order.customer_phone = getattr(customer, "telefono", None)
+    order.delivery_address = getattr(customer, "direccion", None)
+    order.delivery_city = getattr(customer, "ciudad", None)
+    order.payment_provider = provider
+    order.payment_method = payment_method
+    db.commit()
+    db.refresh(order)
+    return order
+
+
+def mark_order_paid(
+    db: Session,
+    order_id: int,
+    *,
+    provider: str | None = None,
+    payment_method: str | None = None,
+) -> Order:
+    order = db.query(Order).filter(Order.id == order_id).first()
+    if not order:
+        raise ConflictError("Orden no encontrada.")
+
+    if provider:
+        order.payment_provider = provider
+    if payment_method:
+        order.payment_method = payment_method
+
+    order.status = "paid"
+    _ensure_paid_invoice(db, order)
+    db.commit()
+    db.refresh(order)
+    return order
+
+
+def _ensure_paid_invoice(db: Session, order: Order) -> None:
+    if order.paid_at is None:
+        order.paid_at = datetime.now(timezone.utc)
+
+    pdf_path = ensure_order_invoice_pdf(db, order)
+
+    recipient = order.customer_email
+    if not recipient:
+        user = db.get(User, order.user_id)
+        recipient = user.email if user else None
+
+    if not recipient:
+        return
+
+    recipient = recipient.strip().lower()
+    if order.invoice_email_sent_to == recipient and order.invoice_email_sent_at is not None:
+        return
+
+    try:
+        was_sent = send_invoice_email(recipient_email=recipient, invoice_pdf_path=pdf_path, order=order)
+        if was_sent:
+            order.invoice_email_sent_to = recipient
+            order.invoice_email_sent_at = datetime.now(timezone.utc)
+    except Exception as exc:
+        print(f"[INVOICE EMAIL ERROR] No se pudo enviar factura de orden {order.id}: {exc}")
+
+
+def ensure_order_invoice_pdf(db: Session, order: Order):
+    """Genera o regenera el PDF de factura y guarda su ruta en la orden."""
+    from orders.invoice_service import generate_invoice_pdf
+
+    pdf_path = generate_invoice_pdf(db, order)
+    order.invoice_pdf_path = str(pdf_path)
+    return pdf_path
+
+
+def send_order_invoice_email(db: Session, order_id: int, *, force: bool = False) -> Order:
+    """Envia la factura al correo de facturacion capturado en checkout."""
+    order = db.query(Order).filter(Order.id == order_id).first()
+    if not order:
+        raise ConflictError("Orden no encontrada.")
+
+    if order.status != "paid":
+        raise ConflictError("Solo se puede enviar factura de una orden con pago exitoso.")
+
+    if not order.customer_email:
+        raise ConflictError("La orden no tiene correo de facturación.")
+
+    from orders.invoice_service import send_invoice_email
+
+    pdf_path = ensure_order_invoice_pdf(db, order)
+    recipient = order.customer_email.strip().lower()
+
+    if not force and order.invoice_email_sent_to == recipient and order.invoice_email_sent_at is not None:
+        db.commit()
+        db.refresh(order)
+        return order
+
+    try:
+        was_sent = send_invoice_email(
+            recipient_email=recipient,
+            invoice_pdf_path=pdf_path,
+            order=order,
+        )
+    except Exception as exc:
+        raise ConflictError(f"No se pudo enviar la factura por Mailtrap: {exc}") from exc
+
+    if not was_sent:
+        raise ConflictError("No se pudo enviar la factura. Revisa la configuración de Mailtrap.")
+
+    order.invoice_email_sent_to = recipient
+    order.invoice_email_sent_at = datetime.now(timezone.utc)
     db.commit()
     db.refresh(order)
     return order
